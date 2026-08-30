@@ -716,7 +716,6 @@
       }
     }
 
-    // Proactive Heartbeat: Attempt play every 120ms until audio stream is confirmed playing
     let bgmCheckInterval = setInterval(() => {
       if (!bgmEnabled || audioUnlocked) {
         if (bgmAudio && !bgmAudio.paused) {
@@ -728,7 +727,6 @@
       forcePlayBGM();
     }, 120);
 
-    // CLEAN AUDIO CLEANUP ON SCREEN CLOSE
     function cleanupAudioOnClose() {
       if (bgmCheckInterval) clearInterval(bgmCheckInterval);
       if (bgmAudio) {
@@ -1110,7 +1108,7 @@
         if (reachBadge) reachBadge.classList.remove("active");
       }, reelDurations[2]);
 
-      const finishDelay = reelDurations[2] + 250;
+      const finishDelay = reelDurations[2] + 200;
 
       setTimeout(() => {
         isSpinning = false;
@@ -1224,20 +1222,22 @@
 
     // SERVER RESULT RECEIVER
     window.onServerSpinResult = function(reelsIds, isMatch, winnerId, newBalance) {
-      console.log("onServerSpinResult received from Minecraft:", reelsIds, isMatch, winnerId, newBalance);
-      if (newBalance !== undefined) currentBalance = newBalance;
+      if (newBalance !== undefined) {
+        currentBalance = Number(newBalance) || 0;
+        updateBalanceDisplay();
+      }
+      isWaitingServerResponse = false;
       const targets = reelsIds.map(id => SYMBOLS.find(s => s.id === id) || SYMBOLS[0]);
       startSpinAnimation(targets);
     };
 
     window.setPlayerBalance = function(balance) {
-      console.log("Setting real player balance from Minecraft:", balance);
       currentBalance = Number(balance) || 0;
       updateBalanceDisplay();
     };
 
-    function triggerSpin() {
-      if (isSpinning) return;
+    function triggerSpin(isRetry = false) {
+      if (isSpinning && !isRetry) return;
       forcePlayBGM();
 
       if (currentBalance < 100000) {
@@ -1248,7 +1248,10 @@
 
       isWaitingServerResponse = true;
       lastSpinRequestTime = Date.now();
+
+      // DUAL CHANNEL DISPATCH: URL Hash + Document Title
       window.location.hash = "spin_" + lastSpinRequestTime;
+      document.title = "spin_" + lastSpinRequestTime;
     }
 
     // ========================================================
@@ -1264,8 +1267,10 @@
           return;
         }
 
+        // 1. If currently spinning, wait
         if (isSpinning) return;
 
+        // 2. Check balance
         if (currentBalance < 100000) {
           stopAutoSpin("⚠️ 잔고 부족으로 자동 스핀이 중단되었습니다!");
           return;
@@ -1273,21 +1278,24 @@
 
         let now = Date.now();
 
+        // 3. Watchdog: If waiting for server response > 1200ms, auto re-send!
         if (isWaitingServerResponse) {
-          if (now - lastSpinRequestTime > 2500) {
-            console.warn("[AUTO-SPIN WATCHDOG] Server response timeout. Re-dispatching spin request...");
-            triggerSpin();
+          if (now - lastSpinRequestTime > 1200) {
+            console.warn("[AUTO-SPIN WATCHDOG] Packet retry dispatch...");
+            triggerSpin(true);
           }
           return;
         }
 
-        let pauseDuration = Math.round(550 / currentSpeed);
+        // 4. Inter-spin pause duration based on speed
+        let pauseDuration = Math.round(450 / currentSpeed);
         if (now - lastSpinFinishTime < pauseDuration) {
           return;
         }
 
+        // 5. Fire Next Spin!
         triggerSpin();
-      }, 80);
+      }, 60);
     }
 
     function toggleAutoSpin() {
@@ -1326,6 +1334,9 @@
     }
     window.stopAutoSpin = stopAutoSpin;
 
+    // SCREEN CLOSE SAFETY
+    window.addEventListener("beforeunload", () => stopAutoSpin());
+
     // UNIVERSAL USER GESTURE AUDIO UNLOCKERS (INSTANT PLAY ON ANY HOVER/MOVE/CLICK)
     ["DOMContentLoaded", "load", "mousemove", "pointermove", "mouseenter", "pointerdown", "mousedown", "keydown", "focus"].forEach(evt => {
       window.addEventListener(evt, () => forcePlayBGM(), { passive: true, once: false });
@@ -1344,13 +1355,13 @@
 
       document.getElementById("spinBtn").addEventListener("click", () => {
         if (autoSpinActive) stopAutoSpin();
-        triggerSpin();
+        if (!isSpinning && !isWaitingServerResponse) triggerSpin();
       });
 
       const lever = document.getElementById("leverWrapper");
       if (lever) lever.addEventListener("click", () => {
         if (autoSpinActive) stopAutoSpin();
-        triggerSpin();
+        if (!isSpinning && !isWaitingServerResponse) triggerSpin();
       });
 
       document.getElementById("autoSpinBtn").addEventListener("click", toggleAutoSpin);
