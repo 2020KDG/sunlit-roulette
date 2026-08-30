@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>선릿밸리 3-릴 독립 확률 슬롯머신</title>
+  <title>선릿밸리 3-릴 로얄 슬롯머신</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Cinzel:wght@700;900&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -41,7 +41,7 @@
       align-items: center;
     }
 
-    /* Ambient Casino Lights */
+    /* Ambient Casino Background & Spotlights */
     .casino-bg {
       position: fixed;
       top: 0;
@@ -108,7 +108,7 @@
 
     .marquee-title {
       font-family: 'Black Ops One', 'Cinzel', cursive;
-      font-size: 30px;
+      font-size: 28px;
       letter-spacing: 3px;
       background: linear-gradient(180deg, #ffffff 0%, #ffe066 35%, #ff9900 70%, #ff3300 100%);
       -webkit-background-clip: text;
@@ -119,13 +119,45 @@
       gap: 12px;
     }
 
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* SPEED MULTIPLIER BUTTONS */
+    .speed-btn-group {
+      display: flex;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(255, 215, 0, 0.6);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .speed-btn {
+      background: transparent;
+      border: none;
+      color: #ffd700;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .speed-btn:hover { background: rgba(255, 215, 0, 0.25); }
+    .speed-btn.active {
+      background: linear-gradient(180deg, #ffd700 0%, #ff8800 100%);
+      color: #1a0a00;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
     .audio-btn {
       background: rgba(0, 0, 0, 0.85);
       border: 2px solid #ffd700;
       color: #ffd700;
       font-size: 13px;
       font-weight: 900;
-      padding: 6px 18px;
+      padding: 6px 16px;
       border-radius: 20px;
       cursor: pointer;
       display: flex;
@@ -256,6 +288,58 @@
       pointer-events: none;
     }
 
+    /* INLINE RESULT BANNER (OVERLAY DIRECTLY ON REELS) */
+    .inline-result-banner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      z-index: 100;
+      padding: 16px 42px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-align: center;
+    }
+
+    .inline-result-banner.active {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .inline-result-banner.dud {
+      background: rgba(18, 14, 28, 0.94);
+      border: 3px solid #64748b;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.95);
+    }
+
+    .inline-result-banner.win {
+      background: radial-gradient(circle, #5b148c 0%, #17042a 100%);
+      border: 4px solid #ffd700;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.9), inset 0 0 25px rgba(255, 215, 0, 0.4);
+    }
+
+    .banner-title {
+      font-size: 32px;
+      font-weight: 900;
+      margin-bottom: 4px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    }
+
+    .inline-result-banner.dud .banner-title { color: #94a3b8; }
+    .inline-result-banner.win .banner-title { color: #ffd700; }
+
+    .banner-sub {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
     /* INDIVIDUAL GIGANTIC REEL */
     .reel-window {
       width: 100%;
@@ -370,11 +454,12 @@
       transform: rotate(65deg) scaleY(0.6);
     }
 
-    /* CONTROL DECK (SPIN BUTTON) */
+    /* CONTROL DECK (SPIN & AUTO BUTTONS) */
     .control-deck {
       display: flex;
       justify-content: center;
       align-items: center;
+      gap: 20px;
       margin: 4px 0;
     }
 
@@ -423,6 +508,49 @@
     }
     .mega-spin-btn:disabled .spin-btn-inner { background: #221c2e; }
     .mega-spin-btn:disabled .spin-text { color: #5a4c73; }
+
+    /* AUTO SPIN BUTTON */
+    .auto-spin-btn {
+      background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+      border: 3px solid #bae6fd;
+      border-radius: 20px;
+      padding: 4px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+      transition: all 0.15s ease;
+    }
+
+    .auto-btn-inner {
+      background: linear-gradient(180deg, #0369a1 0%, #075985 100%);
+      border-radius: 14px;
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .auto-btn-text {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .auto-spin-btn.running {
+      background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+      border-color: #fecaca;
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.9);
+      animation: autoPulse 1s infinite alternate;
+    }
+    .auto-spin-btn.running .auto-btn-inner {
+      background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+    }
+
+    @keyframes autoPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
 
     /* BOTTOM ODDS TABLE (FULL-WIDTH COMPACT) */
     .odds-showcase {
@@ -485,74 +613,6 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
-
-    /* WINNER / MISMATCH MODAL */
-    .winner-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.92);
-      backdrop-filter: blur(14px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 3000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .winner-modal-overlay.active { opacity: 1; pointer-events: auto; }
-
-    .winner-modal-card {
-      background: radial-gradient(circle at 50% 20%, #441c75 0%, #120924 100%);
-      border: 4px solid #ffd700;
-      box-shadow: 0 0 80px rgba(255, 215, 0, 0.8), inset 0 0 35px rgba(255, 215, 0, 0.4);
-      border-radius: 28px;
-      padding: 36px 48px;
-      text-align: center;
-      max-width: 480px;
-      transform: scale(0.7);
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .winner-modal-overlay.active .winner-modal-card { transform: scale(1); }
-
-    .modal-header {
-      font-family: 'Cinzel', serif;
-      font-size: 32px;
-      font-weight: 900;
-      margin-bottom: 18px;
-      text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
-    }
-    .modal-match-reel {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 18px;
-      font-size: 56px;
-    }
-    .modal-item-desc {
-      font-size: 15px;
-      color: #e9d5ff;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-
-    .modal-confirm-btn {
-      background: linear-gradient(180deg, #ffd700 0%, #ff8800 100%);
-      color: #1a0a00;
-      border: none;
-      font-size: 18px;
-      font-weight: 900;
-      padding: 12px 52px;
-      border-radius: 14px;
-      cursor: pointer;
-      box-shadow: 0 6px 25px rgba(255, 170, 0, 0.7);
-      transition: transform 0.1s ease;
-    }
-    .modal-confirm-btn:hover { transform: scale(1.06); }
   </style>
 </head>
 <body>
@@ -591,9 +651,19 @@
       <div class="marquee-title">
         <span>⭐</span> SUNLIT 777 ROYAL SLOTS <span>⭐</span>
       </div>
-      <button id="bgmToggleBtn" class="audio-btn active" title="배경음악 ON/OFF">
-        <span class="audio-icon">🔊</span> BGM ON
-      </button>
+
+      <div class="header-controls">
+        <!-- Speed Multiplier (1x / 2x / 4x) -->
+        <div class="speed-btn-group">
+          <button class="speed-btn active" data-speed="1">1x 배속</button>
+          <button class="speed-btn" data-speed="2">2x 터보</button>
+          <button class="speed-btn" data-speed="4">4x 울트라</button>
+        </div>
+
+        <button id="bgmToggleBtn" class="audio-btn active" title="배경음악 ON/OFF">
+          <span class="audio-icon">🔊</span> BGM ON
+        </button>
+      </div>
     </div>
 
     <!-- Running LED Strip Top -->
@@ -622,6 +692,12 @@
         <div class="payline-laser"></div>
         <div class="payline-arrow-right">◀</div>
 
+        <!-- Inline Floating Result Banner (No Blocking Modal) -->
+        <div class="inline-result-banner" id="inlineBanner">
+          <div class="banner-title" id="bannerTitle">-</div>
+          <div class="banner-sub" id="bannerSub">-</div>
+        </div>
+
         <!-- Reel 1 -->
         <div class="reel-window">
           <div class="reel-strip" id="reelStrip0"></div>
@@ -636,7 +712,7 @@
         </div>
       </div>
 
-      <!-- 3D Mechanical Pull Lever (Prominently Placed Next to Reels) -->
+      <!-- 3D Mechanical Pull Lever -->
       <div class="slot-lever-wrapper" id="leverWrapper" title="레버를 당겨 스핀!">
         <div class="lever-rod" id="leverRod">
           <div class="lever-ball" id="leverBall"></div>
@@ -648,12 +724,19 @@
     <!-- Running LED Strip Middle -->
     <div class="led-strip bottom-strip"></div>
 
-    <!-- Spin Control Deck -->
+    <!-- Control Deck (Mega Spin & Auto Spin) -->
     <div class="control-deck">
       <button class="mega-spin-btn" id="spinBtn">
         <div class="spin-btn-inner">
           <span class="spin-icon">🎰</span>
           <span class="spin-text">SPIN! (10만원)</span>
+        </div>
+      </button>
+
+      <button class="auto-spin-btn" id="autoSpinBtn">
+        <div class="auto-btn-inner">
+          <span class="auto-icon">🔄</span>
+          <span class="auto-btn-text" id="autoBtnText">자동 스핀 (OFF)</span>
         </div>
       </button>
     </div>
@@ -696,16 +779,6 @@
     </section>
   </div>
 
-  <!-- Winner / Mismatch Modal -->
-  <div class="winner-modal-overlay" id="winnerModal">
-    <div class="winner-modal-card" id="winnerCard">
-      <h3 class="modal-header" id="modalHeader">-</h3>
-      <div class="modal-match-reel" id="modalMatchReel"></div>
-      <div class="modal-item-desc" id="modalDesc">-</div>
-      <button class="modal-confirm-btn" id="modalConfirmBtn">확인</button>
-    </div>
-  </div>
-
   <script>
     // ========================================================
     // 🎰 3-REEL INDEPENDENT PROBABILITY SLOT MACHINE ENGINE
@@ -724,6 +797,10 @@
 
     let currentBalance = 0;
     let isSpinning = false;
+    let autoSpinActive = false;
+    let currentSpeed = 1; // 1, 2, or 4
+    let autoSpinTimeout = null;
+
     let bgmAudio = null;
     let bgmEnabled = true;
 
@@ -828,7 +905,7 @@
     }
 
     // ========================================================
-    // 🚀 3-REEL INDEPENDENT SPIN ANIMATION
+    // 🚀 3-REEL INDEPENDENT SPIN ANIMATION (WITH SPEED MULTIPLIER)
     // ========================================================
     function startSpinAnimation(reelsTargets) {
       isSpinning = true;
@@ -836,11 +913,16 @@
 
       const spinBtn = document.getElementById("spinBtn");
       const lever = document.getElementById("leverWrapper");
+      const banner = document.getElementById("inlineBanner");
+      
+      // Hide existing banner
+      banner.className = "inline-result-banner";
+
       spinBtn.disabled = true;
 
       if (lever) {
         lever.classList.add("pulled");
-        setTimeout(() => lever.classList.remove("pulled"), 400);
+        setTimeout(() => lever.classList.remove("pulled"), 300 / currentSpeed);
       }
 
       updateBalanceDisplay();
@@ -851,7 +933,12 @@
         populateReel(i, reelsTargets[i]);
       }
 
-      const reelDurations = [2000, 2800, 3600];
+      // Base Durations scaled by speed multiplier
+      // 1x: [1800, 2400, 3000ms]
+      // 2x: [900, 1200, 1500ms]
+      // 4x: [450, 600, 750ms]
+      const baseDurations = [1800, 2400, 3000];
+      const reelDurations = baseDurations.map(d => Math.round(d / currentSpeed));
       const targetY = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
 
       for (let i = 0; i < 3; i++) {
@@ -862,13 +949,15 @@
         setTimeout(() => {
           strip.style.transition = `transform ${reelDurations[i]}ms cubic-bezier(0.12, 0.85, 0.15, 1)`;
           strip.style.transform = `translateY(${targetY}px)`;
-        }, 50);
+        }, 30);
 
         // Play crisp mechanical reel stop clack sound on each reel stop!
         setTimeout(() => {
           playAudio("sfxStop", 0.8);
-        }, reelDurations[i] + 50);
+        }, reelDurations[i] + 30);
       }
+
+      const finishDelay = reelDurations[2] + 250;
 
       setTimeout(() => {
         isSpinning = false;
@@ -879,7 +968,7 @@
         if (isMatch) {
           let winnerPrize = reelsTargets[0];
           document.getElementById("lastWinText").innerText = winnerPrize.name;
-          showWinnerModal(reelsTargets, winnerPrize, true);
+          showInlineResult(winnerPrize, true);
 
           if (winnerPrize.tier === "legendary" || winnerPrize.tier === "epic") {
             playAudio("sfxJackpot", 0.95);
@@ -889,43 +978,56 @@
           }
         } else {
           document.getElementById("lastWinText").innerText = "불일치 (꽝)";
-          showWinnerModal(reelsTargets, null, false);
+          showInlineResult(null, false);
           playAudio("sfxFail", 0.6);
         }
-      }, reelDurations[2] + 450);
+
+        // AUTO-SPIN NEXT CYCLE CHECK
+        if (autoSpinActive) {
+          let nextDelay = Math.round(700 / currentSpeed);
+          if (isMatch) nextDelay = 1500; // Give a brief moment to celebrate win
+          
+          autoSpinTimeout = setTimeout(() => {
+            if (autoSpinActive && !isSpinning) {
+              if (currentBalance >= 100000) {
+                triggerSpin();
+              } else {
+                stopAutoSpin("⚠️ 잔고 부족으로 자동 스핀이 중단되었습니다!");
+              }
+            }
+          }, nextDelay);
+        }
+      }, finishDelay);
     }
 
-    function showWinnerModal(reelsTargets, prize, isMatch) {
-      const modal = document.getElementById("winnerModal");
-      const modalHeader = document.getElementById("modalHeader");
-      const modalMatchReel = document.getElementById("modalMatchReel");
-      const modalDesc = document.getElementById("modalDesc");
-
-      modalMatchReel.innerHTML = `
-        <span>${reelsTargets[0].icon}</span>
-        <span>${reelsTargets[1].icon}</span>
-        <span>${reelsTargets[2].icon}</span>
-      `;
+    // INLINE FLOATING RESULT BANNER (NON-BLOCKING)
+    function showInlineResult(prize, isMatch) {
+      const banner = document.getElementById("inlineBanner");
+      const title = document.getElementById("bannerTitle");
+      const sub = document.getElementById("bannerSub");
 
       if (isMatch && prize) {
+        banner.className = "inline-result-banner win active";
         if (prize.tier === "legendary") {
-          modalHeader.innerText = "🌟 [전설] 잭팟 당첨!!";
-          modalHeader.style.color = "#ffaa00";
+          title.innerText = "🌟 [0.1% 전설 잭팟 당첨!!] 🌟";
         } else if (prize.tier === "epic") {
-          modalHeader.innerText = "🌈 에픽 보상 당첨!";
-          modalHeader.style.color = "#d946ef";
+          title.innerText = "🌈 에픽 보상 당첨! 🌈";
         } else {
-          modalHeader.innerText = "🎉 당첨을 축하합니다!";
-          modalHeader.style.color = "#ffd700";
+          title.innerText = "🎉 3-릴 일치 당첨! 🎉";
         }
-        modalDesc.innerHTML = `<b style="font-size: 22px; color: #ffffff;">${prize.name}</b><br><span style="font-size: 14px; color: #e9d5ff;">${prize.desc}</span>`;
+        sub.innerText = `${prize.name} (${prize.desc})`;
       } else {
-        modalHeader.innerText = "😢 꽝";
-        modalHeader.style.color = "#cbd5e1";
-        modalDesc.innerText = "3개의 칸에 동일한 심볼이 나란히 정렬되면 해당 보상이 지급됩니다!";
-      }
+        banner.className = "inline-result-banner dud active";
+        title.innerText = "😢 꽝";
+        sub.innerText = "3개의 칸에 동일한 심볼이 나란히 정렬되면 당첨됩니다!";
 
-      modal.classList.add("active");
+        // Auto fade out dud banner after a moment
+        setTimeout(() => {
+          if (!isSpinning && banner.classList.contains("dud")) {
+            banner.classList.remove("active");
+          }
+        }, Math.max(1200 / currentSpeed, 600));
+      }
     }
 
     function updateBalanceDisplay() {
@@ -970,7 +1072,7 @@
         });
 
         frames++;
-        if (frames < 200) {
+        if (frames < 180) {
           requestAnimationFrame(renderCoins);
         } else {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -999,12 +1101,54 @@
 
       if (currentBalance < 100000) {
         showToast("⚠️ 은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
+        stopAutoSpin();
         return;
       }
 
       // Trigger spin request to Minecraft
       window.location.hash = "spin_" + Date.now();
     }
+
+    // AUTO-SPIN TOGGLE
+    function toggleAutoSpin() {
+      if (autoSpinActive) {
+        stopAutoSpin();
+      } else {
+        if (currentBalance < 100000) {
+          showToast("⚠️ 은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
+          return;
+        }
+        autoSpinActive = true;
+        const autoBtn = document.getElementById("autoSpinBtn");
+        const autoBtnText = document.getElementById("autoBtnText");
+        autoBtn.classList.add("running");
+        autoBtnText.innerText = "자동 스핀 (STOP)";
+        showToast("🔄 자동 스핀을 시작합니다! (멈추려면 다시 클릭)");
+        
+        if (!isSpinning) {
+          triggerSpin();
+        }
+      }
+    }
+
+    function stopAutoSpin(reason = null) {
+      autoSpinActive = false;
+      if (autoSpinTimeout) clearTimeout(autoSpinTimeout);
+      const autoBtn = document.getElementById("autoSpinBtn");
+      const autoBtnText = document.getElementById("autoBtnText");
+      if (autoBtn) autoBtn.classList.remove("running");
+      if (autoBtnText) autoBtnText.innerText = "자동 스핀 (OFF)";
+      if (reason) showToast(reason);
+    }
+
+    // ESC AND SCREEN CLOSE SAFETY
+    window.addEventListener("beforeunload", () => {
+      stopAutoSpin();
+    });
+    window.addEventListener("blur", () => {
+      // If user switches away, stop auto loop
+      stopAutoSpin();
+    });
 
     window.addEventListener("DOMContentLoaded", () => {
       bgmAudio = document.getElementById("bgmAudio");
@@ -1017,12 +1161,26 @@
       }
       updateBalanceDisplay();
 
-      document.getElementById("spinBtn").addEventListener("click", triggerSpin);
-      const lever = document.getElementById("leverWrapper");
-      if (lever) lever.addEventListener("click", triggerSpin);
+      document.getElementById("spinBtn").addEventListener("click", () => {
+        if (autoSpinActive) stopAutoSpin();
+        triggerSpin();
+      });
 
-      document.getElementById("modalConfirmBtn").addEventListener("click", () => {
-        document.getElementById("winnerModal").classList.remove("active");
+      const lever = document.getElementById("leverWrapper");
+      if (lever) lever.addEventListener("click", () => {
+        if (autoSpinActive) stopAutoSpin();
+        triggerSpin();
+      });
+
+      document.getElementById("autoSpinBtn").addEventListener("click", toggleAutoSpin);
+
+      // Speed Multiplier Buttons (1x / 2x / 4x)
+      document.querySelectorAll(".speed-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          currentSpeed = parseInt(btn.dataset.speed, 10) || 1;
+        });
       });
 
       const bgmBtn = document.getElementById("bgmToggleBtn");
