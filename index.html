@@ -743,7 +743,7 @@
 
     <!-- Bottom Odds Showcase -->
     <section class="odds-showcase">
-      <div class="odds-header">🏆 3-릴 개별 독립 확률 및 3개 일치 시 당첨 보상 (불일치 시 자동 꽝)</div>
+      <div class="odds-header">🏆 3-릴 개별 독립 확률 및 당첨 보상 (불일치 시 자동 꽝)</div>
       <div class="odds-grid">
         <div class="odds-card tier-legendary">
           <div class="odds-rate">0.10% 일치 (릴 10.0%) 🌟</div>
@@ -754,8 +754,8 @@
         <div class="odds-card tier-epic">
           <div class="odds-rate">0.41% 일치 (릴 16.0%) 🏺</div>
           <div class="odds-icon">🏺✨</div>
-          <div class="odds-name">유물 경험치 병</div>
-          <div class="odds-sub">고대 유물 경험치 획득</div>
+          <div class="odds-name">유물 경험치 병 30개</div>
+          <div class="odds-sub">유물 경험치 30병 지급</div>
         </div>
         <div class="odds-card tier-rare">
           <div class="odds-rate">0.80% 일치 (릴 20.0%) 🎒</div>
@@ -785,7 +785,7 @@
     // ========================================================
     const SYMBOLS = [
       { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", singleRate: 10.0 },
-      { id: "relic_bottle", name: "유물 경험치 병", desc: "고대 유물 경험치 즉시 충전", icon: "🏺✨", tier: "epic", badge: "EPIC", singleRate: 16.0 },
+      { id: "relic_bottle", name: "유물 경험치 병 30개", desc: "고대 유물 경험치 30병 즉시 획득", icon: "🏺✨", tier: "epic", badge: "EPIC", singleRate: 16.0 },
       { id: "hat_bag", name: "모자 뽑기 가방", desc: "랜덤 모자 가방 1종 획득", icon: "🎒🎩", tier: "rare", badge: "RARE", singleRate: 20.0 },
       { id: "feast_set", name: "궁극의 미식가 세트", desc: "선릿밸리 특급 요리 3종 지급", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 26.0 },
       { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 28.0 }
@@ -1033,7 +1033,7 @@
         } else if (prize.tier === "epic") {
           title.innerText = "🏺 에픽 보상 당첨! 🏺";
         } else {
-          title.innerText = "🎉 3-릴 일치 당첨! 🎉";
+          title.innerText = "🎉 당첨! 🎉";
         }
         sub.innerText = `${prize.name} (${prize.desc})`;
       } else {
