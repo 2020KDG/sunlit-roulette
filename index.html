@@ -462,6 +462,30 @@
     .odds-name { font-size: 12px; font-weight: 800; white-space: nowrap; margin-bottom: 1px; }
     .odds-sub { font-size: 9px; color: #a78bfa; }
 
+    /* TOAST NOTIFICATION */
+    .toast-popup {
+      position: fixed;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: rgba(220, 38, 38, 0.95);
+      border: 2px solid #ffd700;
+      box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 10px 28px;
+      border-radius: 14px;
+      z-index: 4000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .toast-popup.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* WINNER MODAL */
     .winner-modal-overlay {
       position: fixed;
@@ -529,6 +553,9 @@
   </style>
 </head>
 <body>
+  <!-- Toast Notification -->
+  <div class="toast-popup" id="toastPopup">⚠️ 은행 잔고가 부족합니다! (최소 100,000원 필요)</div>
+
   <!-- High Quality Background Music Audio Element -->
   <audio id="bgmAudio" loop preload="auto">
     <source src="https://assets.mixkit.co/music/1183/1183.mp3" type="audio/mp3">
@@ -693,6 +720,14 @@
     let sfxAudioCtx = null;
     let bgmAudio = null;
     let bgmEnabled = true;
+
+    function showToast(msg) {
+      const toast = document.getElementById("toastPopup");
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.classList.add("active");
+      setTimeout(() => toast.classList.remove("active"), 2800);
+    }
 
     function initAudio() {
       if (!sfxAudioCtx) {
@@ -1044,7 +1079,7 @@
       initAudio();
 
       if (currentBalance < 100000) {
-        alert("은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
+        showToast("⚠️ 은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
         return;
       }
 
@@ -1062,7 +1097,7 @@
             }
           },
           onFailure: function(code, msg) {
-            alert("룰렛 오류: " + msg);
+            showToast("⚠️ 룰렛 오류: " + msg);
           }
         });
       } else {
