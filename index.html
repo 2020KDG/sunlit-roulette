@@ -819,7 +819,7 @@
       audioUnlocked = true;
 
       if (bgmAudio && bgmEnabled) {
-        bgmAudio.volume = 0.55;
+        bgmAudio.volume = 0.49;
         const playPromise = bgmAudio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
@@ -829,7 +829,7 @@
       }
     }
 
-    function playAudio(id, vol = 0.7) {
+    function playAudio(id, vol = 0.49) {
       try {
         unlockAudioEngine();
         let sound = document.getElementById(id);
@@ -952,7 +952,7 @@
       }
 
       updateBalanceDisplay();
-      playAudio("sfxSpin", 0.65);
+      playAudio("sfxSpin", 0.45);
 
       for (let i = 0; i < 3; i++) {
         populateReel(i, reelsTargets[i]);
@@ -973,7 +973,7 @@
         }, 30);
 
         setTimeout(() => {
-          playAudio("sfxStop", 0.8);
+          playAudio("sfxStop", 0.56);
         }, reelDurations[i] + 30);
       }
 
@@ -991,15 +991,15 @@
           showInlineResult(winnerPrize, true);
 
           if (winnerPrize.tier === "legendary" || winnerPrize.tier === "epic") {
-            playAudio("sfxJackpot", 0.95);
+            playAudio("sfxJackpot", 0.66);
             triggerCoinShower();
           } else {
-            playAudio("sfxDing", 0.9);
+            playAudio("sfxDing", 0.63);
           }
         } else {
           document.getElementById("lastWinText").innerText = "불일치 (꽝)";
           showInlineResult(null, false);
-          playAudio("sfxFail", 0.6);
+          playAudio("sfxFail", 0.42);
         }
 
         // AUTO-SPIN NEXT CYCLE
@@ -1208,7 +1208,7 @@
           bgmBtn.innerHTML = '<span class="audio-icon">🔊</span> BGM ON';
           bgmBtn.classList.add("active");
           if (bgmAudio) {
-            bgmAudio.volume = 0.55;
+            bgmAudio.volume = 0.49;
             bgmAudio.play().catch(() => {});
           }
         } else {
