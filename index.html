@@ -66,7 +66,7 @@
 
     @keyframes sweep {
       0% { transform: rotate(-34deg); opacity: 0.3; }
-      100% { transform: rotate(34deg); opacity: 0.9; }
+      100% { transform: rotate(34deg); opacity: 1; }
     }
 
     #coinCanvas {
@@ -619,7 +619,7 @@
   <!-- Toast Notification -->
   <div class="toast-popup" id="toastPopup">⚠️ 은행 잔고가 부족합니다! (최소 100,000원 필요)</div>
 
-  <!-- Authentic Casino Sound Effects Elements -->
+  <!-- Authentic Casino Sound Elements -->
   <audio id="bgmAudio" loop preload="auto">
     <source src="https://assets.mixkit.co/music/1183/1183.mp3" type="audio/mp3">
   </audio>
@@ -692,7 +692,7 @@
         <div class="payline-laser"></div>
         <div class="payline-arrow-right">◀</div>
 
-        <!-- Inline Floating Result Banner (No Blocking Modal) -->
+        <!-- Inline Floating Result Banner -->
         <div class="inline-result-banner" id="inlineBanner">
           <div class="banner-title" id="bannerTitle">-</div>
           <div class="banner-sub" id="bannerSub">-</div>
@@ -803,14 +803,53 @@
 
     let bgmAudio = null;
     let bgmEnabled = true;
+    let audioUnlocked = false;
+
+    // BULLETPROOF AUDIO RESILIENCE & CLONING ENGINE
+    const audioPool = {};
+    const SFX_URLS = {
+      sfxSpin: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
+      sfxStop: "https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3",
+      sfxDing: "https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3",
+      sfxJackpot: "https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3",
+      sfxFail: "https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"
+    };
+
+    function unlockAudioEngine() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+
+      // Resume WebAudio / BGM on any user gesture
+      if (bgmAudio && bgmEnabled) {
+        bgmAudio.volume = 0.55;
+        const playPromise = bgmAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Will retry on next interaction
+            audioUnlocked = false;
+          });
+        }
+      }
+    }
 
     function playAudio(id, vol = 0.7) {
       try {
-        const audio = document.getElementById(id);
-        if (audio) {
-          audio.currentTime = 0;
-          audio.volume = vol;
-          audio.play().catch(e => {});
+        unlockAudioEngine();
+        let sound = document.getElementById(id);
+        if (sound) {
+          sound.volume = vol;
+          sound.currentTime = 0;
+          let p = sound.play();
+          if (p !== undefined) {
+            p.catch(() => {
+              // Fallback to newly spawned Audio object if DOM audio is stuck
+              if (SFX_URLS[id]) {
+                let freshAudio = new Audio(SFX_URLS[id]);
+                freshAudio.volume = vol;
+                freshAudio.play().catch(() => {});
+              }
+            });
+          }
         }
       } catch (e) {}
     }
@@ -831,13 +870,6 @@
       toast.innerText = msg;
       toast.classList.add("active");
       setTimeout(() => toast.classList.remove("active"), 2800);
-    }
-
-    function initAudio() {
-      if (bgmAudio && bgmEnabled && bgmAudio.paused) {
-        bgmAudio.volume = 0.55;
-        bgmAudio.play().catch(e => {});
-      }
     }
 
     // ========================================================
@@ -909,15 +941,13 @@
     // ========================================================
     function startSpinAnimation(reelsTargets) {
       isSpinning = true;
-      initAudio();
+      unlockAudioEngine();
 
       const spinBtn = document.getElementById("spinBtn");
       const lever = document.getElementById("leverWrapper");
       const banner = document.getElementById("inlineBanner");
       
-      // Hide existing banner
       banner.className = "inline-result-banner";
-
       spinBtn.disabled = true;
 
       if (lever) {
@@ -928,15 +958,10 @@
       updateBalanceDisplay();
       playAudio("sfxSpin", 0.65);
 
-      // Populate each reel with its specific target symbol
       for (let i = 0; i < 3; i++) {
         populateReel(i, reelsTargets[i]);
       }
 
-      // Base Durations scaled by speed multiplier
-      // 1x: [1800, 2400, 3000ms]
-      // 2x: [900, 1200, 1500ms]
-      // 4x: [450, 600, 750ms]
       const baseDurations = [1800, 2400, 3000];
       const reelDurations = baseDurations.map(d => Math.round(d / currentSpeed));
       const targetY = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
@@ -951,7 +976,6 @@
           strip.style.transform = `translateY(${targetY}px)`;
         }, 30);
 
-        // Play crisp mechanical reel stop clack sound on each reel stop!
         setTimeout(() => {
           playAudio("sfxStop", 0.8);
         }, reelDurations[i] + 30);
@@ -982,10 +1006,10 @@
           playAudio("sfxFail", 0.6);
         }
 
-        // AUTO-SPIN NEXT CYCLE CHECK
+        // AUTO-SPIN NEXT CYCLE
         if (autoSpinActive) {
           let nextDelay = Math.round(700 / currentSpeed);
-          if (isMatch) nextDelay = 1500; // Give a brief moment to celebrate win
+          if (isMatch) nextDelay = 1500;
           
           autoSpinTimeout = setTimeout(() => {
             if (autoSpinActive && !isSpinning) {
@@ -1021,7 +1045,6 @@
         title.innerText = "😢 꽝";
         sub.innerText = "3개의 칸에 동일한 심볼이 나란히 정렬되면 당첨됩니다!";
 
-        // Auto fade out dud banner after a moment
         setTimeout(() => {
           if (!isSpinning && banner.classList.contains("dud")) {
             banner.classList.remove("active");
@@ -1097,7 +1120,7 @@
 
     function triggerSpin() {
       if (isSpinning) return;
-      initAudio();
+      unlockAudioEngine();
 
       if (currentBalance < 100000) {
         showToast("⚠️ 은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
@@ -1105,7 +1128,6 @@
         return;
       }
 
-      // Trigger spin request to Minecraft
       window.location.hash = "spin_" + Date.now();
     }
 
@@ -1142,12 +1164,12 @@
     }
 
     // ESC AND SCREEN CLOSE SAFETY
-    window.addEventListener("beforeunload", () => {
-      stopAutoSpin();
-    });
-    window.addEventListener("blur", () => {
-      // If user switches away, stop auto loop
-      stopAutoSpin();
+    window.addEventListener("beforeunload", () => stopAutoSpin());
+    window.addEventListener("blur", () => stopAutoSpin());
+
+    // UNIVERSAL USER GESTURE AUDIO UNLOCKERS
+    ["click", "pointerdown", "mousedown", "keydown", "mousemove"].forEach(evt => {
+      window.addEventListener(evt, () => unlockAudioEngine(), { passive: true });
     });
 
     window.addEventListener("DOMContentLoaded", () => {
@@ -1174,7 +1196,7 @@
 
       document.getElementById("autoSpinBtn").addEventListener("click", toggleAutoSpin);
 
-      // Speed Multiplier Buttons (1x / 2x / 4x)
+      // Speed Multiplier Buttons
       document.querySelectorAll(".speed-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
@@ -1191,7 +1213,7 @@
           bgmBtn.classList.add("active");
           if (bgmAudio) {
             bgmAudio.volume = 0.55;
-            bgmAudio.play().catch(e => {});
+            bgmAudio.play().catch(() => {});
           }
         } else {
           bgmBtn.innerHTML = '<span class="audio-icon">🔇</span> BGM OFF';
@@ -1200,13 +1222,7 @@
         }
       });
 
-      document.body.addEventListener("click", () => {
-        initAudio();
-      }, { once: true });
-
-      try {
-        initAudio();
-      } catch (e) {}
+      unlockAudioEngine();
     });
   </script>
 </body>
