@@ -674,7 +674,7 @@
   <div class="toast-popup" id="toastPopup">⚠️ 은행 잔고가 부족합니다! (최소 100,000원 필요)</div>
 
   <!-- Authentic Casino Sound Elements -->
-  <audio id="bgmAudio" loop preload="auto">
+  <audio id="bgmAudio" loop preload="auto" autoplay>
     <source src="https://assets.mixkit.co/music/1183/1183.mp3" type="audio/mp3">
   </audio>
   <audio id="sfxSpin" preload="auto">
@@ -877,24 +877,25 @@
       sfxFail: "https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"
     };
 
-    function unlockAudioEngine() {
-      if (audioUnlocked) return;
-      audioUnlocked = true;
-
-      if (bgmAudio && bgmEnabled) {
+    // INSTANT FORCE PLAY BGM ENGINE
+    function forcePlayBGM() {
+      if (!bgmEnabled) return;
+      if (!bgmAudio) bgmAudio = document.getElementById("bgmAudio");
+      if (bgmAudio) {
         bgmAudio.volume = 0.49;
-        const playPromise = bgmAudio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            audioUnlocked = false;
-          });
+        let p = bgmAudio.play();
+        if (p !== undefined) {
+          p.then(() => {
+            audioUnlocked = true;
+          }).catch(() => {});
         }
       }
     }
+    window.forcePlayBGM = forcePlayBGM;
 
     function playAudio(id, vol = 0.49) {
       try {
-        unlockAudioEngine();
+        forcePlayBGM();
         let sound = document.getElementById(id);
         if (sound) {
           sound.volume = vol;
@@ -996,7 +997,7 @@
     function startSpinAnimation(reelsTargets) {
       isSpinning = true;
       isWaitingServerResponse = false;
-      unlockAudioEngine();
+      forcePlayBGM();
 
       const spinBtn = document.getElementById("spinBtn");
       const lever = document.getElementById("leverWrapper");
@@ -1208,7 +1209,7 @@
 
     function triggerSpin() {
       if (isSpinning) return;
-      unlockAudioEngine();
+      forcePlayBGM();
 
       if (currentBalance < 100000) {
         showToast("⚠️ 은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
@@ -1234,10 +1235,8 @@
           return;
         }
 
-        // 1. If reels are actively spinning, wait
         if (isSpinning) return;
 
-        // 2. Check balance
         if (currentBalance < 100000) {
           stopAutoSpin("⚠️ 잔고 부족으로 자동 스핀이 중단되었습니다!");
           return;
@@ -1245,7 +1244,6 @@
 
         let now = Date.now();
 
-        // 3. Watchdog: If waiting for server response > 2500ms (packet dropped or lag), re-trigger!
         if (isWaitingServerResponse) {
           if (now - lastSpinRequestTime > 2500) {
             console.warn("[AUTO-SPIN WATCHDOG] Server response timeout. Re-dispatching spin request...");
@@ -1254,13 +1252,11 @@
           return;
         }
 
-        // 4. Inter-spin pause duration based on speed
         let pauseDuration = Math.round(550 / currentSpeed);
         if (now - lastSpinFinishTime < pauseDuration) {
           return;
         }
 
-        // 5. Fire Next Spin!
         triggerSpin();
       }, 80);
     }
@@ -1304,15 +1300,21 @@
     // SCREEN CLOSE SAFETY
     window.addEventListener("beforeunload", () => stopAutoSpin());
 
-    // UNIVERSAL USER GESTURE AUDIO UNLOCKERS
-    ["click", "pointerdown", "mousedown", "keydown", "mousemove"].forEach(evt => {
-      window.addEventListener(evt, () => unlockAudioEngine(), { passive: true });
+    // UNIVERSAL USER GESTURE AUDIO UNLOCKERS (INSTANT PLAY ON ANY HOVER/MOVE/CLICK)
+    ["DOMContentLoaded", "load", "mousemove", "pointermove", "mouseenter", "pointerdown", "mousedown", "keydown", "focus"].forEach(evt => {
+      window.addEventListener(evt, () => forcePlayBGM(), { passive: true });
+      document.addEventListener(evt, () => forcePlayBGM(), { passive: true });
     });
 
     window.addEventListener("DOMContentLoaded", () => {
       bgmAudio = document.getElementById("bgmAudio");
       setupLEDBulbs();
       initAllReels();
+
+      if (bgmAudio) {
+        bgmAudio.addEventListener("canplaythrough", () => forcePlayBGM());
+        bgmAudio.addEventListener("loadeddata", () => forcePlayBGM());
+      }
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("balance")) {
@@ -1333,7 +1335,6 @@
 
       document.getElementById("autoSpinBtn").addEventListener("click", toggleAutoSpin);
 
-      // Speed Multiplier Buttons
       document.querySelectorAll(".speed-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
@@ -1359,7 +1360,7 @@
         }
       });
 
-      unlockAudioEngine();
+      forcePlayBGM();
     });
   </script>
 </body>
