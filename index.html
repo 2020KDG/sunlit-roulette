@@ -4,13 +4,602 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>선릿밸리 로얄 슬롯 카지노</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Black+Ops+One&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Cinzel:wght@700;900&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold-glow: #ffd700;
+      --gold-dark: #b8860b;
+      --gold-light: #fff3a8;
+      --neon-red: #ff0055;
+      --neon-blue: #00e5ff;
+      --card-width: 140px;
+      --card-margin: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 30%, #2c1a4d 0%, #0c0817 80%, #05030a 100%);
+      color: #ffffff;
+      font-family: 'Noto Sans KR', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background Effects */
+    .casino-bg-effects {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .spotlight {
+      position: absolute;
+      top: -100px;
+      width: 350px;
+      height: 900px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.15), transparent 70%);
+      transform-origin: top center;
+      animation: sweep 6s infinite alternate ease-in-out;
+    }
+    .spotlight-left { left: 10%; transform: rotate(-25deg); }
+    .spotlight-right { right: 10%; transform: rotate(25deg); animation-delay: -3s; }
+
+    @keyframes sweep {
+      0% { transform: rotate(-30deg); opacity: 0.4; }
+      100% { transform: rotate(30deg); opacity: 0.8; }
+    }
+
+    #coinCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Slot Machine Cabinet */
+    .slot-machine-cabinet {
+      position: relative;
+      z-index: 10;
+      width: 95%;
+      max-width: 1080px;
+      background: linear-gradient(180deg, #23193a 0%, #130d22 100%);
+      border: 4px solid #f39c12;
+      border-radius: 28px;
+      box-shadow: 0 0 60px rgba(0, 0, 0, 0.95), 0 0 40px rgba(243, 156, 18, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.2);
+      padding: 16px 20px;
+    }
+
+    /* LED Bulbs */
+    .led-bulb-strip {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .top-strip { margin-bottom: 8px; }
+    .bottom-strip { margin-top: 12px; }
+
+    .bulb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffcc00;
+      box-shadow: 0 0 8px #ffcc00;
+      animation: bulbBlink 1s infinite alternate;
+    }
+    .bulb.red { background: #ff0055; box-shadow: 0 0 10px #ff0055; }
+    .bulb.blue { background: #00d4ff; box-shadow: 0 0 10px #00d4ff; }
+    .bulb.gold { background: #ffd700; box-shadow: 0 0 10px #ffd700; }
+
+    @keyframes bulbBlink {
+      0% { opacity: 0.3; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1.15); }
+    }
+
+    /* Marquee Crown */
+    .marquee-crown {
+      background: linear-gradient(180deg, #3d1c66 0%, #1d0933 100%);
+      border: 2px solid #ffd700;
+      border-radius: 18px;
+      padding: 8px 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      margin-bottom: 14px;
+    }
+
+    .marquee-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .jackpot-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .jackpot-star {
+      font-size: 26px;
+      animation: spinStar 3s infinite linear;
+    }
+
+    @keyframes spinStar {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .jackpot-title {
+      font-family: 'Black Ops One', 'Cinzel', cursive;
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(180deg, #fffbe0 0%, #ffd700 40%, #ff8800 80%, #ff3300 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.8));
+    }
+
+    .audio-btn {
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .audio-btn:hover { background: rgba(255, 215, 0, 0.2); transform: scale(1.05); }
+
+    /* Cabinet Status Bar */
+    .cabinet-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .status-box {
+      background: rgba(10, 6, 20, 0.85);
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      border-radius: 12px;
+      padding: 8px 18px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-label {
+      font-size: 13px;
+      color: #bfa8e6;
+      font-weight: 700;
+    }
+
+    .status-val {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .currency {
+      font-size: 14px;
+      color: #ffd700;
+    }
+
+    .cost-text {
+      color: #ffaa00;
+      font-size: 18px;
+    }
+
+    /* Slot Reel Container & Screen Frame */
+    .slot-reel-container {
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .vertical-strip {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 0 8px;
+    }
+
+    .slot-screen-frame {
+      flex: 1;
+      height: 180px;
+      background: radial-gradient(circle at center, #1b1233 0%, #080410 100%);
+      border: 3px solid #ffd700;
+      border-radius: 18px;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.95), 0 0 25px rgba(255, 215, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Center Marker & Payline */
+    .reel-marker-top, .reel-marker-bottom {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffd700;
+      font-size: 20px;
+      z-index: 20;
+      filter: drop-shadow(0 0 8px #ffd700);
+    }
+    .reel-marker-top { top: 2px; }
+    .reel-marker-bottom { bottom: 2px; }
+
+    .reel-payline {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, transparent 0%, #ffd700 20%, #ff0055 50%, #ffd700 80%, transparent 100%);
+      box-shadow: 0 0 12px #ffd700, 0 0 6px #ff0055;
+      transform: translateX(-50%);
+      z-index: 15;
+    }
+
+    .roller-viewport {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .roller-track {
+      display: flex;
+      flex-direction: row !important;
+      position: absolute;
+      left: 0;
+      top: 15px;
+      height: 150px;
+      will-change: transform;
+    }
+
+    /* Slot Item Cards (NO PERCENTAGE TEXT) */
+    .slot-card {
+      width: var(--card-width);
+      height: 150px;
+      margin: 0 var(--card-margin);
+      background: linear-gradient(180deg, rgba(30, 20, 50, 0.9) 0%, rgba(12, 8, 22, 0.95) 100%);
+      border-radius: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 6px;
+      flex-shrink: 0;
+      position: relative;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.7);
+    }
+
+    .slot-card-icon {
+      font-size: 48px;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+    }
+
+    .slot-card-name {
+      font-size: 13px;
+      font-weight: 800;
+      text-align: center;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 125px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .slot-card-badge {
+      font-size: 10px;
+      font-weight: 900;
+      margin-top: 4px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Tier Styles */
+    .slot-card.tier-legendary {
+      border-color: #ffaa00 !important;
+      background: linear-gradient(180deg, rgba(255, 170, 0, 0.3) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+      box-shadow: 0 0 20px rgba(255, 170, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.3) !important;
+    }
+    .slot-card.tier-legendary .slot-card-badge { background: #ffaa00; color: #1a0800; }
+    .slot-card.tier-legendary .slot-card-icon { animation: iconPulse 1.2s infinite alternate; }
+
+    .slot-card.tier-epic {
+      border-color: #d946ef !important;
+      background: linear-gradient(180deg, rgba(217, 70, 239, 0.25) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+      box-shadow: 0 0 15px rgba(217, 70, 239, 0.4) !important;
+    }
+    .slot-card.tier-epic .slot-card-badge { background: #d946ef; color: #ffffff; }
+
+    .slot-card.tier-rare {
+      border-color: #06b6d4 !important;
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.2) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+    }
+    .slot-card.tier-rare .slot-card-badge { background: #06b6d4; color: #ffffff; }
+
+    .slot-card.tier-uncommon {
+      border-color: #22c55e !important;
+      background: linear-gradient(180deg, rgba(34, 197, 94, 0.2) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+    }
+    .slot-card.tier-uncommon .slot-card-badge { background: #22c55e; color: #ffffff; }
+
+    .slot-card.tier-payback {
+      border-color: #eab308 !important;
+      background: linear-gradient(180deg, rgba(234, 179, 8, 0.2) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+    }
+    .slot-card.tier-payback .slot-card-badge { background: #eab308; color: #1a1000; }
+
+    .slot-card.tier-dud {
+      border-color: #64748b !important;
+      background: linear-gradient(180deg, rgba(100, 116, 139, 0.2) 0%, rgba(20, 10, 35, 0.98) 100%) !important;
+    }
+    .slot-card.tier-dud .slot-card-badge { background: #64748b; color: #ffffff; }
+
+    @keyframes iconPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 5px #ffd700); }
+      100% { transform: scale(1.15); filter: drop-shadow(0 0 18px #ffaa00); }
+    }
+
+    /* 3D Lever */
+    .slot-lever-wrapper {
+      position: absolute;
+      right: -32px;
+      top: 10px;
+      bottom: 10px;
+      width: 30px;
+      cursor: pointer;
+    }
+
+    .lever-base {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 24px;
+      height: 35px;
+      background: linear-gradient(90deg, #555 0%, #999 50%, #333 100%);
+      border-radius: 6px;
+      border: 1px solid #ffd700;
+      box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .lever-rod {
+      position: absolute;
+      bottom: 45px;
+      left: 8px;
+      width: 8px;
+      height: 90px;
+      background: linear-gradient(90deg, #ccc 0%, #fff 50%, #888 100%);
+      border-radius: 4px;
+      transform-origin: bottom center;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .lever-ball {
+      position: absolute;
+      top: -16px;
+      left: -8px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #cc0000 60%, #660000 100%);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.6);
+    }
+
+    .slot-lever-wrapper.pulled .lever-rod {
+      transform: rotate(65deg) scaleY(0.7);
+    }
+
+    /* Spin Button */
+    .control-deck {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 12px 0 18px 0;
+    }
+
+    .mega-spin-btn {
+      position: relative;
+      background: linear-gradient(180deg, #ffe066 0%, #f39c12 40%, #d35400 100%);
+      border: 3px solid #fff5cc;
+      border-radius: 22px;
+      padding: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(243, 156, 18, 0.6), 0 0 20px rgba(255, 215, 0, 0.4);
+      transition: all 0.15s ease;
+      overflow: hidden;
+    }
+
+    .spin-btn-inner {
+      background: linear-gradient(180deg, #ff9900 0%, #cc5200 100%);
+      border-radius: 16px;
+      padding: 12px 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spin-icon { font-size: 32px; }
+
+    .spin-text {
+      font-family: 'Black Ops One', 'Cinzel', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .mega-spin-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(243, 156, 18, 0.8), 0 0 30px rgba(255, 215, 0, 0.7);
+    }
+
+    .mega-spin-btn:active { transform: translateY(2px) scale(0.98); }
+
+    .mega-spin-btn:disabled {
+      background: #3a324a;
+      border-color: #55496b;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .mega-spin-btn:disabled .spin-btn-inner { background: #262033; }
+    .mega-spin-btn:disabled .spin-text { color: #6b5e85; }
+
+    /* Odds Table */
+    .odds-showcase {
+      background: rgba(8, 5, 15, 0.85);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      border-radius: 16px;
+      padding: 12px 16px;
+    }
+
+    .odds-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: #ffd700;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .odds-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .odds-card {
+      background: rgba(20, 14, 35, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    .odds-card:hover { transform: translateY(-3px); }
+
+    .odds-rate { font-size: 11px; font-weight: 900; margin-bottom: 4px; }
+    .odds-icon { font-size: 26px; margin-bottom: 2px; }
+    .odds-name { font-size: 12px; font-weight: 800; margin-bottom: 2px; white-space: nowrap; }
+    .odds-sub { font-size: 10px; color: #9d8ec2; }
+
+    /* Winner Modal */
+    .winner-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .winner-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .winner-modal-card {
+      background: radial-gradient(circle at 50% 20%, #3d1c66 0%, #120924 100%);
+      border: 3px solid #ffd700;
+      box-shadow: 0 0 60px rgba(255, 215, 0, 0.7), inset 0 0 30px rgba(255, 215, 0, 0.3);
+      border-radius: 24px;
+      padding: 36px 44px;
+      text-align: center;
+      max-width: 420px;
+      transform: scale(0.7);
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .winner-modal-overlay.active .winner-modal-card { transform: scale(1); }
+
+    .modal-header {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #ffd700;
+      margin-bottom: 16px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    }
+
+    .modal-item-icon {
+      font-size: 72px;
+      margin-bottom: 12px;
+      animation: modalPulse 1.2s infinite alternate ease-in-out;
+    }
+
+    @keyframes modalPulse {
+      0% { transform: scale(1); filter: drop-shadow(0 0 10px #ffd700); }
+      100% { transform: scale(1.18); filter: drop-shadow(0 0 30px #ffaa00); }
+    }
+
+    .modal-item-name { font-size: 20px; font-weight: 900; color: #ffffff; margin-bottom: 6px; }
+    .modal-item-desc { font-size: 13px; color: #d1c4e9; margin-bottom: 24px; }
+
+    .modal-confirm-btn {
+      background: linear-gradient(180deg, #ffd700 0%, #ff8800 100%);
+      color: #1a0a00;
+      border: none;
+      font-size: 17px;
+      font-weight: 900;
+      padding: 12px 42px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255, 170, 0, 0.6);
+      transition: transform 0.1s ease;
+    }
+    .modal-confirm-btn:hover { transform: scale(1.05); }
+  </style>
 </head>
 <body>
-  <!-- Background Ambient Glow & Particles -->
+  <!-- Ambient BG Glow & Coin Shower Canvas -->
   <div class="casino-bg-effects">
     <div class="spotlight spotlight-left"></div>
     <div class="spotlight spotlight-right"></div>
@@ -18,11 +607,9 @@
   </div>
 
   <div class="slot-machine-cabinet">
-    <!-- Top Marquee Crown with Running LED Bulbs -->
+    <!-- Marquee Crown -->
     <div class="marquee-crown">
-      <div class="led-bulb-strip top-strip">
-        <!-- Bulbs generated by JS -->
-      </div>
+      <div class="led-bulb-strip top-strip"></div>
       <div class="marquee-content">
         <div class="jackpot-display">
           <span class="jackpot-star">⭐</span>
@@ -37,9 +624,9 @@
       </div>
     </div>
 
-    <!-- Main Cabinet Body -->
+    <!-- Cabinet Body -->
     <div class="cabinet-body">
-      <!-- Player Info Bar -->
+      <!-- Status Bar -->
       <div class="cabinet-status-bar">
         <div class="status-box bank-box">
           <span class="status-label">🏦 은행 잔고</span>
@@ -54,28 +641,24 @@
         </div>
       </div>
 
-      <!-- Center Reel Slot Area with Mechanical Frame -->
+      <!-- Center Reel Slot Area -->
       <div class="slot-reel-container">
-        <!-- Vertical Side LED strips -->
         <div class="led-bulb-strip vertical-strip left-strip"></div>
 
         <div class="slot-screen-frame">
-          <!-- Vegas Winning Center Marker -->
           <div class="reel-marker-top">▼</div>
           <div class="reel-marker-bottom">▲</div>
           <div class="reel-payline"></div>
 
           <!-- Horizontal Roller Viewport -->
           <div class="roller-viewport" id="rouletteViewport">
-            <div class="roller-track" id="rouletteTrack">
-              <!-- Cards populated dynamically without % -->
-            </div>
+            <div class="roller-track" id="rouletteTrack"></div>
           </div>
         </div>
 
         <div class="led-bulb-strip vertical-strip right-strip"></div>
 
-        <!-- 3D Mechanical Pull Lever on the right side -->
+        <!-- 3D Mechanical Lever -->
         <div class="slot-lever-wrapper" id="leverWrapper">
           <div class="lever-base"></div>
           <div class="lever-rod" id="leverRod">
@@ -84,19 +667,17 @@
         </div>
       </div>
 
-      <!-- Action & Spin Control Deck -->
+      <!-- Spin Button Control Deck -->
       <div class="control-deck">
-        <div class="deck-lights"></div>
         <button class="mega-spin-btn" id="spinBtn">
           <div class="spin-btn-inner">
             <span class="spin-icon">🎰</span>
             <span class="spin-text">SPIN! (10만원)</span>
           </div>
-          <div class="btn-flare"></div>
         </button>
       </div>
 
-      <!-- Bottom Odds Table (Clear & Clean) -->
+      <!-- Bottom Odds Table -->
       <section class="odds-showcase">
         <div class="odds-header">🏆 보상 아이템 목록 및 획득 확률</div>
         <div class="odds-grid">
@@ -140,14 +721,12 @@
       </section>
     </div>
 
-    <!-- Bottom Marquee LED Strip -->
     <div class="led-bulb-strip bottom-strip"></div>
   </div>
 
-  <!-- Winner Modal Popup -->
+  <!-- Winner Modal -->
   <div class="winner-modal-overlay" id="winnerModal">
     <div class="winner-modal-card" id="winnerCard">
-      <div class="modal-strobe-light"></div>
       <h3 class="modal-header" id="modalHeader">🎉 당첨 축하합니다!</h3>
       <div class="modal-item-icon" id="modalIcon">🐰✨</div>
       <div class="modal-item-name" id="modalName">🌟 [전설] 토끼 슬리퍼</div>
@@ -156,6 +735,505 @@
     </div>
   </div>
 
-  <script src="roulette.js"></script>
+  <script>
+    // 🎰 Sunlit Casino Pachinko & Vegas Slot Machine Engine
+    const PRIZES = [
+      { id: "bunny_slippers", name: "🌟 [전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", weight: 0.05 },
+      { id: "prismatic_shard", name: "무지개 파편", desc: "최고급 전설 가공 보석", icon: "💎✨", tier: "epic", badge: "EPIC", weight: 1.50 },
+      { id: "diamond_set", name: "고급 광물 세트", desc: "다이아몬드 8개 + 오므니 지오드 10개", icon: "⛏️💎", tier: "rare", badge: "RARE", weight: 15.00 },
+      { id: "feast_set", name: "궁극의 미식가 세트", desc: "특급 요리 및 고급 음식 모음", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", weight: 33.45 },
+      { id: "sun_payback", name: "선릿 코인 환급", desc: "20,000원 ~ 50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", weight: 40.00 },
+      { id: "poisonous_potato", name: "독이 있는 감자", desc: "아쉬운 꽝! 다음 기회에...", icon: "🥔💨", tier: "dud", badge: "MISS", weight: 10.00 }
+    ];
+
+    const CARD_WIDTH = 140;
+    const CARD_MARGIN = 8;
+    const TOTAL_CARD_WIDTH = CARD_WIDTH + (CARD_MARGIN * 2); // 156px
+    const TOTAL_CARDS = 80;
+    const WINNER_INDEX = 65;
+
+    let currentBalance = 1500000;
+    let isSpinning = false;
+    let audioCtx = null;
+    let bgmTimer = null;
+    let bgmEnabled = true;
+
+    // Web Audio Synthesizer: Casino BGM & FX
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      if (bgmEnabled && !bgmTimer) {
+        startCasinoBGM();
+      }
+    }
+
+    function startCasinoBGM() {
+      if (!audioCtx || !bgmEnabled) return;
+      if (bgmTimer) clearInterval(bgmTimer);
+
+      const bassNotes = [130.81, 146.83, 164.81, 174.61, 196.00, 220.00, 246.94, 261.63];
+      const leadNotes = [523.25, 659.25, 783.99, 1046.50, 880.00, 659.25, 587.33, 523.25];
+      let step = 0;
+
+      bgmTimer = setInterval(() => {
+        if (!bgmEnabled || !audioCtx) return;
+        try {
+          const now = audioCtx.currentTime;
+          // Bass
+          const bOsc = audioCtx.createOscillator();
+          const bGain = audioCtx.createGain();
+          bOsc.type = "sawtooth";
+          bOsc.frequency.setValueAtTime(bassNotes[step % bassNotes.length], now);
+          bGain.gain.setValueAtTime(0.04, now);
+          bGain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+          bOsc.connect(bGain);
+          bGain.connect(audioCtx.destination);
+          bOsc.start(now);
+          bOsc.stop(now + 0.18);
+
+          // Lead Arp
+          if (step % 2 === 0) {
+            const lOsc = audioCtx.createOscillator();
+            const lGain = audioCtx.createGain();
+            lOsc.type = "square";
+            lOsc.frequency.setValueAtTime(leadNotes[(step / 2) % leadNotes.length], now);
+            lGain.gain.setValueAtTime(0.03, now);
+            lGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            lOsc.connect(lGain);
+            lGain.connect(audioCtx.destination);
+            lOsc.start(now);
+            lOsc.stop(now + 0.15);
+          }
+
+          // Hi-Hat
+          const hOsc = audioCtx.createOscillator();
+          const hGain = audioCtx.createGain();
+          hOsc.type = "triangle";
+          hOsc.frequency.setValueAtTime(4000, now);
+          hGain.gain.setValueAtTime(0.015, now);
+          hGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+          hOsc.connect(hGain);
+          hGain.connect(audioCtx.destination);
+          hOsc.start(now);
+          hOsc.stop(now + 0.05);
+
+          step = (step + 1) % 16;
+        } catch (e) {}
+      }, 234);
+    }
+
+    function stopCasinoBGM() {
+      if (bgmTimer) {
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
+    }
+
+    function playLeverSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.25);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } catch (e) {}
+    }
+
+    function playTickSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(1000 + Math.random() * 300, now);
+        osc.frequency.exponentialRampToValueAtTime(150, now + 0.035);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.035);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.035);
+      } catch (e) {}
+    }
+
+    function playJackpotSound() {
+      if (!audioCtx) return;
+      try {
+        const chord = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98];
+        chord.forEach((freq, idx) => {
+          const now = audioCtx.currentTime + idx * 0.08;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.4, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.6);
+        });
+      } catch (e) {}
+    }
+
+    function playFailSound() {
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(70, now + 0.45);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.45);
+      } catch (e) {}
+    }
+
+    // LED Bulbs Generation
+    function setupLEDBulbs() {
+      const topStrip = document.querySelector(".top-strip");
+      const bottomStrip = document.querySelector(".bottom-strip");
+      const leftStrip = document.querySelector(".left-strip");
+      const rightStrip = document.querySelector(".right-strip");
+      const colors = ["gold", "red", "blue"];
+
+      if (topStrip) {
+        topStrip.innerHTML = "";
+        for (let i = 0; i < 28; i++) {
+          const b = document.createElement("div");
+          b.className = `bulb ${colors[i % 3]}`;
+          b.style.animationDelay = `${(i * 0.08)}s`;
+          topStrip.appendChild(b);
+        }
+      }
+
+      if (bottomStrip) {
+        bottomStrip.innerHTML = "";
+        for (let i = 0; i < 28; i++) {
+          const b = document.createElement("div");
+          b.className = `bulb ${colors[(i + 1) % 3]}`;
+          b.style.animationDelay = `${(i * 0.08)}s`;
+          bottomStrip.appendChild(b);
+        }
+      }
+
+      if (leftStrip) {
+        leftStrip.innerHTML = "";
+        for (let i = 0; i < 6; i++) {
+          const b = document.createElement("div");
+          b.className = `bulb ${colors[i % 3]}`;
+          b.style.animationDelay = `${(i * 0.15)}s`;
+          leftStrip.appendChild(b);
+        }
+      }
+
+      if (rightStrip) {
+        rightStrip.innerHTML = "";
+        for (let i = 0; i < 6; i++) {
+          const b = document.createElement("div");
+          b.className = `bulb ${colors[(i + 2) % 3]}`;
+          b.style.animationDelay = `${(i * 0.15)}s`;
+          rightStrip.appendChild(b);
+        }
+      }
+    }
+
+    // Populate Roller Track (NO PERCENTAGES)
+    function populateTrack(winnerPrize = null) {
+      const track = document.getElementById("rouletteTrack");
+      track.innerHTML = "";
+      track.style.transition = "none";
+      track.style.transform = "translateX(0px)";
+
+      for (let i = 0; i < TOTAL_CARDS; i++) {
+        let prize;
+        if (i === WINNER_INDEX && winnerPrize) {
+          prize = winnerPrize;
+        } else {
+          const rand = Math.random() * 100;
+          let cumulative = 0;
+          for (const p of PRIZES) {
+            cumulative += p.weight;
+            if (rand <= cumulative) {
+              prize = p;
+              break;
+            }
+          }
+          if (!prize) prize = PRIZES[PRIZES.length - 1];
+        }
+
+        const card = document.createElement("div");
+        card.className = `slot-card tier-${prize.tier}`;
+        card.innerHTML = `
+          <div class="slot-card-icon">${prize.icon}</div>
+          <div class="slot-card-name">${prize.name}</div>
+          <div class="slot-card-badge">${prize.badge}</div>
+        `;
+        track.appendChild(card);
+      }
+    }
+
+    // Spin Animation
+    function startSpinAnimation(winnerItem) {
+      if (isSpinning) return;
+      isSpinning = true;
+      initAudio();
+
+      const spinBtn = document.getElementById("spinBtn");
+      const leverWrapper = document.getElementById("leverWrapper");
+      spinBtn.disabled = true;
+
+      if (leverWrapper) {
+        leverWrapper.classList.add("pulled");
+        playLeverSound();
+        setTimeout(() => leverWrapper.classList.remove("pulled"), 400);
+      }
+
+      currentBalance = Math.max(0, currentBalance - 100000);
+      updateBalanceDisplay();
+
+      populateTrack(winnerItem);
+
+      const track = document.getElementById("rouletteTrack");
+      const viewport = document.getElementById("rouletteViewport");
+      const viewportWidth = viewport.offsetWidth;
+
+      const jitter = (Math.random() - 0.5) * (CARD_WIDTH * 0.5);
+      const targetX = -((WINNER_INDEX * TOTAL_CARD_WIDTH) + (TOTAL_CARD_WIDTH / 2) - (viewportWidth / 2) + jitter);
+
+      let lastSoundCardIndex = 0;
+      const startTime = performance.now();
+      const duration = 6500;
+
+      function trackSoundProgress() {
+        if (!isSpinning) return;
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const easedProgress = 1 - Math.pow(1 - progress, 4);
+        const currentTranslate = targetX * easedProgress;
+
+        const currentPassedCards = Math.floor(Math.abs(currentTranslate) / TOTAL_CARD_WIDTH);
+        if (currentPassedCards > lastSoundCardIndex) {
+          lastSoundCardIndex = currentPassedCards;
+          playTickSound();
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(trackSoundProgress);
+        }
+      }
+
+      setTimeout(() => {
+        track.style.transition = `transform ${duration}ms cubic-bezier(0.12, 0.8, 0.15, 1)`;
+        track.style.transform = `translateX(${targetX}px)`;
+        requestAnimationFrame(trackSoundProgress);
+      }, 50);
+
+      setTimeout(() => {
+        isSpinning = false;
+        spinBtn.disabled = false;
+
+        showWinnerModal(winnerItem);
+
+        if (winnerItem.tier === "legendary" || winnerItem.tier === "epic") {
+          playJackpotSound();
+          triggerCoinShower();
+        } else if (winnerItem.tier === "dud") {
+          playFailSound();
+        } else {
+          playTickSound();
+        }
+      }, duration + 400);
+    }
+
+    function showWinnerModal(prize) {
+      const modal = document.getElementById("winnerModal");
+      const modalHeader = document.getElementById("modalHeader");
+      const modalIcon = document.getElementById("modalIcon");
+      const modalName = document.getElementById("modalName");
+      const modalDesc = document.getElementById("modalDesc");
+
+      if (prize.tier === "legendary") {
+        modalHeader.innerText = "🌟 [전설 0.05%] 잭팟 당첨!!";
+        modalHeader.style.color = "#ffaa00";
+      } else if (prize.tier === "epic") {
+        modalHeader.innerText = "🌈 에픽 보상 당첨!";
+        modalHeader.style.color = "#d946ef";
+      } else if (prize.tier === "dud") {
+        modalHeader.innerText = "💀 아쉬운 꽝...";
+        modalHeader.style.color = "#94a3b8";
+      } else {
+        modalHeader.innerText = "🎉 당첨 축하합니다!";
+        modalHeader.style.color = "#ffd700";
+      }
+
+      modalIcon.innerText = prize.icon;
+      modalName.innerText = prize.name;
+      modalDesc.innerText = prize.desc;
+
+      modal.classList.add("active");
+    }
+
+    function updateBalanceDisplay() {
+      document.getElementById("playerBalance").innerText = currentBalance.toLocaleString();
+    }
+
+    function triggerCoinShower() {
+      const canvas = document.getElementById("coinCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const coins = [];
+      for (let i = 0; i < 70; i++) {
+        coins.push({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 200,
+          vx: (Math.random() - 0.5) * 4,
+          vy: 4 + Math.random() * 8,
+          size: 14 + Math.random() * 12,
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.2
+        });
+      }
+
+      let frames = 0;
+      function renderCoins() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        coins.forEach(c => {
+          c.x += c.vx;
+          c.y += c.vy;
+          c.rotation += c.vRot;
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rotation);
+          ctx.font = `${c.size}px serif`;
+          ctx.fillText("🪙", -c.size / 2, c.size / 2);
+          ctx.restore();
+        });
+
+        frames++;
+        if (frames < 180) {
+          requestAnimationFrame(renderCoins);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      requestAnimationFrame(renderCoins);
+    }
+
+    window.onServerSpinResult = function(winnerId, newBalance) {
+      const winnerPrize = PRIZES.find(p => p.id === winnerId) || PRIZES[PRIZES.length - 1];
+      if (newBalance !== undefined) currentBalance = newBalance;
+      startSpinAnimation(winnerPrize);
+    };
+
+    window.setPlayerBalance = function(balance) {
+      currentBalance = balance;
+      updateBalanceDisplay();
+    };
+
+    function triggerSpin() {
+      if (isSpinning) return;
+      initAudio();
+      if (currentBalance < 100000) {
+        alert("은행 계좌 잔고가 부족합니다! (최소 100,000원 필요)");
+        return;
+      }
+
+      window.location.hash = "spin_" + Date.now();
+
+      if (window.mcefQuery) {
+        window.mcefQuery({
+          request: "spin",
+          onSuccess: function(response) {
+            try {
+              const data = JSON.parse(response);
+              window.onServerSpinResult(data.winnerId, data.newBalance);
+            } catch (e) {
+              console.error("MCEF parse error:", e);
+            }
+          },
+          onFailure: function(code, msg) {
+            alert("룰렛 오류: " + msg);
+          }
+        });
+      } else {
+        setTimeout(() => {
+          if (!isSpinning) {
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            let chosenPrize = PRIZES[PRIZES.length - 1];
+            for (const p of PRIZES) {
+              cumulative += p.weight;
+              if (rand <= cumulative) {
+                chosenPrize = p;
+                break;
+              }
+            }
+            startSpinAnimation(chosenPrize);
+          }
+        }, 100);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      setupLEDBulbs();
+      populateTrack();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("balance")) {
+        currentBalance = parseInt(urlParams.get("balance"), 10) || 0;
+      }
+      updateBalanceDisplay();
+
+      document.getElementById("spinBtn").addEventListener("click", triggerSpin);
+      const lever = document.getElementById("leverWrapper");
+      if (lever) lever.addEventListener("click", triggerSpin);
+
+      document.getElementById("modalConfirmBtn").addEventListener("click", () => {
+        document.getElementById("winnerModal").classList.remove("active");
+      });
+
+      const bgmBtn = document.getElementById("bgmToggleBtn");
+      bgmBtn.addEventListener("click", () => {
+        initAudio();
+        bgmEnabled = !bgmEnabled;
+        if (bgmEnabled) {
+          bgmBtn.innerHTML = '<span class="audio-icon">🔊</span> BGM ON';
+          bgmBtn.classList.add("active");
+          startCasinoBGM();
+        } else {
+          bgmBtn.innerHTML = '<span class="audio-icon">🔇</span> BGM OFF';
+          bgmBtn.classList.remove("active");
+          stopCasinoBGM();
+        }
+      });
+
+      document.body.addEventListener("click", () => {
+        initAudio();
+      }, { once: true });
+    });
+  </script>
 </body>
 </html>
