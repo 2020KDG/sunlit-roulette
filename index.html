@@ -350,6 +350,53 @@
       overflow: hidden;
       position: relative;
       box-shadow: inset 0 25px 35px rgba(0, 0, 0, 0.98), inset 0 -25px 35px rgba(0, 0, 0, 0.98);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    /* 🔥 JACKPOT REACH (REEL 3 DRAMATIC NEON FLASH) */
+    .reel-window.reach-active {
+      border: 4px solid #ffd700 !important;
+      box-shadow: 0 0 40px #ffd700, inset 0 0 30px rgba(255, 215, 0, 0.7) !important;
+      animation: reachNeonPulse 0.35s infinite alternate !important;
+    }
+
+    @keyframes reachNeonPulse {
+      0% {
+        box-shadow: 0 0 25px #ffd700, 0 0 50px #ff0055, inset 0 0 20px rgba(255, 215, 0, 0.5);
+        border-color: #ffd700;
+      }
+      100% {
+        box-shadow: 0 0 55px #ffd700, 0 0 80px #ff007f, inset 0 0 35px rgba(255, 215, 0, 0.9);
+        border-color: #ffffff;
+      }
+    }
+
+    .reach-badge {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      background: linear-gradient(90deg, #ff0055 0%, #ffd700 100%);
+      color: #ffffff;
+      font-family: 'Black Ops One', cursive;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 6px 16px;
+      border-radius: 16px;
+      letter-spacing: 2px;
+      z-index: 60;
+      box-shadow: 0 0 20px #ffd700;
+      pointer-events: none;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+    }
+    .reach-badge.active {
+      transform: translateX(-50%) scale(1);
+      animation: reachBadgePulse 0.4s infinite alternate;
+    }
+    @keyframes reachBadgePulse {
+      0% { transform: translateX(-50%) scale(0.95); }
+      100% { transform: translateX(-50%) scale(1.1); }
     }
 
     .reel-strip {
@@ -636,6 +683,9 @@
   <audio id="sfxStop" preload="auto">
     <source src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" type="audio/mp3">
   </audio>
+  <audio id="sfxReach" preload="auto">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3" type="audio/mp3">
+  </audio>
   <audio id="sfxDing" preload="auto">
     <source src="https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3" type="audio/mp3">
   </audio>
@@ -706,15 +756,16 @@
         </div>
 
         <!-- Reel 1 -->
-        <div class="reel-window">
+        <div class="reel-window" id="reelWindow0">
           <div class="reel-strip" id="reelStrip0"></div>
         </div>
         <!-- Reel 2 -->
-        <div class="reel-window">
+        <div class="reel-window" id="reelWindow1">
           <div class="reel-strip" id="reelStrip1"></div>
         </div>
-        <!-- Reel 3 -->
-        <div class="reel-window">
+        <!-- Reel 3 (With Reach Effect Badge) -->
+        <div class="reel-window" id="reelWindow2">
+          <div class="reach-badge" id="reachBadge">🔥 JACKPOT REACH! 🔥</div>
           <div class="reel-strip" id="reelStrip2"></div>
         </div>
       </div>
@@ -816,6 +867,7 @@
     const SFX_URLS = {
       sfxSpin: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
       sfxStop: "https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3",
+      sfxReach: "https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3",
       sfxDing: "https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3",
       sfxJackpot: "https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3",
       sfxFail: "https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"
@@ -899,14 +951,12 @@
     }
 
     // ========================================================
-    // 🎰 Initialize 3 Gigantic Vertical Reels
+    // 🎰 Initialize 3 Gigantic Vertical Reels (Without Pre-offset Bug)
     // ========================================================
     function populateReel(reelIndex, targetPrize = null) {
       const strip = document.getElementById(`reelStrip${reelIndex}`);
       strip.innerHTML = "";
       strip.style.transition = "none";
-      const startOffset = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
-      strip.style.transform = `translateY(${startOffset}px)`;
 
       for (let i = 0; i < NUM_REEL_SYMBOLS; i++) {
         let prize;
@@ -928,13 +978,16 @@
     }
 
     function initAllReels() {
+      const targetY = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
       for (let i = 0; i < 3; i++) {
         populateReel(i, SYMBOLS[i % SYMBOLS.length]);
+        const strip = document.getElementById(`reelStrip${i}`);
+        strip.style.transform = `translateY(${targetY}px)`;
       }
     }
 
     // ========================================================
-    // 🚀 3-REEL SPIN ANIMATION (WITH SPEED MULTIPLIER)
+    // 🚀 3-REEL SPIN ANIMATION (FLAWLESS REFLOW + RABBIT REACH SLOW-MO)
     // ========================================================
     function startSpinAnimation(reelsTargets) {
       isSpinning = true;
@@ -943,8 +996,12 @@
       const spinBtn = document.getElementById("spinBtn");
       const lever = document.getElementById("leverWrapper");
       const banner = document.getElementById("inlineBanner");
+      const reelWin2 = document.getElementById("reelWindow2");
+      const reachBadge = document.getElementById("reachBadge");
       
       banner.className = "inline-result-banner";
+      if (reelWin2) reelWin2.classList.remove("reach-active");
+      if (reachBadge) reachBadge.classList.remove("active");
       spinBtn.disabled = true;
 
       if (lever) {
@@ -955,28 +1012,75 @@
       updateBalanceDisplay();
       playAudio("sfxSpin", 0.45);
 
+      // Check if 토끼 슬리퍼 리치(Reach) 조건 발동 ([🐰, 🐰, ?])
+      const isRabbitReach = (reelsTargets[0].id === "bunny_slippers" && reelsTargets[1].id === "bunny_slippers");
+
+      // 1. Populate the reels with 40 new symbols
       for (let i = 0; i < 3; i++) {
         populateReel(i, reelsTargets[i]);
       }
 
-      const baseDurations = [1800, 2400, 3000];
+      // 2. Compute dynamic durations
+      let baseDurations;
+      let reelEasings = [
+        "cubic-bezier(0.12, 0.85, 0.15, 1)",
+        "cubic-bezier(0.12, 0.85, 0.15, 1)",
+        "cubic-bezier(0.12, 0.85, 0.15, 1)"
+      ];
+
+      if (isRabbitReach) {
+        // 🔥 토끼 슬리퍼 잭팟 리치: 3번째 릴을 롱 슬로우 모션으로 회전!
+        baseDurations = [1600, 2200, 4800];
+        reelEasings[2] = "cubic-bezier(0.08, 0.82, 0.17, 1)"; // 긴장감 넘치는 슬로우 모션 감속
+      } else {
+        baseDurations = [1600, 2200, 2800];
+      }
+
       const reelDurations = baseDurations.map(d => Math.round(d / currentSpeed));
       const targetY = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
 
+      // 3. FLUSH STYLES / FORCE REFLOW (100% Prevents Skipped Animation Glitch)
       for (let i = 0; i < 3; i++) {
         const strip = document.getElementById(`reelStrip${i}`);
         strip.style.transition = "none";
         strip.style.transform = "translateY(0px)";
-
-        setTimeout(() => {
-          strip.style.transition = `transform ${reelDurations[i]}ms cubic-bezier(0.12, 0.85, 0.15, 1)`;
-          strip.style.transform = `translateY(${targetY}px)`;
-        }, 30);
-
-        setTimeout(() => {
-          playAudio("sfxStop", 0.56);
-        }, reelDurations[i] + 30);
+        void strip.offsetHeight; // Critical layout flush!
       }
+
+      // 4. Trigger Smooth Spinning on Next Browser Repaint Frame
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          for (let i = 0; i < 3; i++) {
+            const strip = document.getElementById(`reelStrip${i}`);
+            strip.style.transition = `transform ${reelDurations[i]}ms ${reelEasings[i]}`;
+            strip.style.transform = `translateY(${targetY}px)`;
+          }
+        });
+      });
+
+      // Reel 1 Stop
+      setTimeout(() => {
+        playAudio("sfxStop", 0.56);
+      }, reelDurations[0]);
+
+      // Reel 2 Stop
+      setTimeout(() => {
+        playAudio("sfxStop", 0.56);
+
+        // 🔥 만약 토끼 슬리퍼 리치라면 3번째 릴에 극적 텐션 이펙트 점등!
+        if (isRabbitReach) {
+          if (reelWin2) reelWin2.classList.add("reach-active");
+          if (reachBadge) reachBadge.classList.add("active");
+          playAudio("sfxReach", 0.65);
+        }
+      }, reelDurations[1]);
+
+      // Reel 3 Stop
+      setTimeout(() => {
+        playAudio("sfxStop", 0.65);
+        if (reelWin2) reelWin2.classList.remove("reach-active");
+        if (reachBadge) reachBadge.classList.remove("active");
+      }, reelDurations[2]);
 
       const finishDelay = reelDurations[2] + 250;
 
@@ -991,7 +1095,10 @@
           document.getElementById("lastWinText").innerText = winnerPrize.name;
           showInlineResult(winnerPrize, true);
 
-          if (winnerPrize.tier === "legendary" || winnerPrize.tier === "epic") {
+          if (winnerPrize.tier === "legendary") {
+            playAudio("sfxJackpot", 0.75);
+            triggerCoinShower();
+          } else if (winnerPrize.tier === "epic") {
             playAudio("sfxJackpot", 0.66);
             triggerCoinShower();
           } else {
@@ -1006,7 +1113,7 @@
         // AUTO-SPIN NEXT CYCLE
         if (autoSpinActive) {
           let nextDelay = Math.round(750 / currentSpeed);
-          if (isMatch) nextDelay = 1500;
+          if (isMatch || isRabbitReach) nextDelay = 1600;
           
           autoSpinTimeout = setTimeout(() => {
             if (autoSpinActive && !isSpinning) {
