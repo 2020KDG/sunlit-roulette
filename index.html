@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>선릿밸리 로얄 3-릴 슬롯머신</title>
+  <title>선릿밸리 3-릴 독립 확률 슬롯머신</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Cinzel:wght@700;900&family=Noto+Sans+KR:wght@500;700;900&display=swap" rel="stylesheet">
@@ -26,7 +26,6 @@
       user-select: none;
     }
 
-    /* 100% TRUE FULLSCREEN */
     html, body {
       width: 100%;
       height: 100%;
@@ -109,7 +108,7 @@
 
     .marquee-title {
       font-family: 'Black Ops One', 'Cinzel', cursive;
-      font-size: 32px;
+      font-size: 30px;
       letter-spacing: 3px;
       background: linear-gradient(180deg, #ffffff 0%, #ffe066 35%, #ff9900 70%, #ff3300 100%);
       -webkit-background-clip: text;
@@ -319,7 +318,6 @@
     .tier-rare .symbol-badge { background: #06b6d4; color: #ffffff; }
     .tier-uncommon .symbol-badge { background: #22c55e; color: #ffffff; }
     .tier-payback .symbol-badge { background: #eab308; color: #1a1000; }
-    .tier-dud .symbol-badge { background: #64748b; color: #ffffff; }
 
     /* 3D MECHANICAL LEVER */
     .slot-lever-wrapper {
@@ -442,7 +440,7 @@
 
     .odds-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
     }
 
@@ -486,7 +484,7 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* WINNER MODAL */
+    /* WINNER / MISMATCH MODAL */
     .winner-modal-overlay {
       position: fixed;
       top: 0;
@@ -513,7 +511,7 @@
       border-radius: 28px;
       padding: 36px 54px;
       text-align: center;
-      max-width: 480px;
+      max-width: 520px;
       transform: scale(0.7);
       transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -593,7 +591,7 @@
         <span class="meter-val cost">100,000 원</span>
       </div>
       <div class="meter-box">
-        <span class="meter-label">🏆 최근 당첨금 / 보상</span>
+        <span class="meter-label">🏆 최근 당첨금 / 결과</span>
         <span class="meter-val last-win" id="lastWinText">-</span>
       </div>
     </div>
@@ -643,49 +641,43 @@
 
     <!-- Bottom Odds Showcase -->
     <section class="odds-showcase">
-      <div class="odds-header">🏆 3-릴 일치 시 지급되는 보상 및 확률 (총합 100%)</div>
+      <div class="odds-header">🏆 3-릴 개별 독립 확률 및 3개 일치 시 당첨 보상 (불일치 시 자동 꽝)</div>
       <div class="odds-grid">
         <div class="odds-card tier-legendary">
-          <div class="odds-rate">0.05% 🌟 전설</div>
+          <div class="odds-rate">0.05% 일치 (릴 7.94%) 🌟</div>
           <div class="odds-icon">🐰✨</div>
           <div class="odds-name">[전설] 토끼 슬리퍼</div>
           <div class="odds-sub">낙하 무효 + 이속 10%</div>
         </div>
         <div class="odds-card tier-epic">
-          <div class="odds-rate">1.50% 🌈 에픽</div>
+          <div class="odds-rate">1.00% 일치 (릴 21.54%) 🌈</div>
           <div class="odds-icon">💎✨</div>
           <div class="odds-name">무지개 파편</div>
           <div class="odds-sub">전설 가공 보석</div>
         </div>
         <div class="odds-card tier-rare">
-          <div class="odds-rate">15.00% ⛏️ 레어</div>
+          <div class="odds-rate">2.00% 일치 (릴 27.14%) ⛏️</div>
           <div class="odds-icon">💎⛏️</div>
           <div class="odds-name">고급 광물 세트</div>
           <div class="odds-sub">다이아 8 + 지오드 10</div>
         </div>
         <div class="odds-card tier-uncommon">
-          <div class="odds-rate">33.45% 🍱 일반</div>
+          <div class="odds-rate">3.00% 일치 (릴 31.07%) 🍱</div>
           <div class="odds-icon">🍱🍗</div>
           <div class="odds-name">궁극의 미식가 세트</div>
           <div class="odds-sub">특급 요리 모음</div>
         </div>
         <div class="odds-card tier-payback">
-          <div class="odds-rate">40.00% 🪙 페이백</div>
+          <div class="odds-rate">0.19% 일치 (릴 12.30%) 🪙</div>
           <div class="odds-icon">🪙💰</div>
           <div class="odds-name">선릿 코인 환급</div>
-          <div class="odds-sub">2~5만원 계좌 입금</div>
-        </div>
-        <div class="odds-card tier-dud">
-          <div class="odds-rate">10.00% 💀 꽝</div>
-          <div class="odds-icon">🥔💨</div>
-          <div class="odds-name">독이 있는 감자</div>
-          <div class="odds-sub">아쉬운 꽝!</div>
+          <div class="odds-sub">50,000원 계좌 입금</div>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- Winner Modal -->
+  <!-- Winner / Mismatch Modal -->
   <div class="winner-modal-overlay" id="winnerModal">
     <div class="winner-modal-card" id="winnerCard">
       <h3 class="modal-header" id="modalHeader">🎉 당첨 축하합니다!</h3>
@@ -700,15 +692,14 @@
 
   <script>
     // ========================================================
-    // 🎰 3-REEL VEGAS SLOT MACHINE ENGINE & AUDIO SYNTHESIZER
+    // 🎰 3-REEL INDEPENDENT PROBABILITY SLOT MACHINE ENGINE
     // ========================================================
-    const PRIZES = [
-      { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", weight: 0.05 },
-      { id: "prismatic_shard", name: "무지개 파편", desc: "최고급 전설 가공 보석", icon: "💎✨", tier: "epic", badge: "EPIC", weight: 1.50 },
-      { id: "diamond_set", name: "고급 광물 세트", desc: "다이아몬드 8개 + 오므니 지오드 10개", icon: "⛏️💎", tier: "rare", badge: "RARE", weight: 15.00 },
-      { id: "feast_set", name: "궁극의 미식가 세트", desc: "특급 요리 및 고급 음식 모음", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", weight: 33.45 },
-      { id: "sun_payback", name: "선릿 코인 환급", desc: "20,000원 ~ 50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", weight: 40.00 },
-      { id: "poisonous_potato", name: "독이 있는 감자", desc: "아쉬운 꽝! 다음 기회에...", icon: "🥔💨", tier: "dud", badge: "MISS", weight: 10.00 }
+    const SYMBOLS = [
+      { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", singleRate: 7.937 },
+      { id: "prismatic_shard", name: "무지개 파편", desc: "최고급 전설 가공 보석", icon: "💎✨", tier: "epic", badge: "EPIC", singleRate: 21.544 },
+      { id: "diamond_set", name: "고급 광물 세트", desc: "다이아몬드 8개 + 오므니 지오드 10개", icon: "⛏️💎", tier: "rare", badge: "RARE", singleRate: 27.144 },
+      { id: "feast_set", name: "궁극의 미식가 세트", desc: "특급 요리 및 고급 음식 모음", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 31.072 },
+      { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 12.303 }
     ];
 
     const SYMBOL_HEIGHT = 230;
@@ -720,6 +711,16 @@
     let sfxAudioCtx = null;
     let bgmAudio = null;
     let bgmEnabled = true;
+
+    function rollClientSingleReel() {
+      let rand = Math.random() * 100.0;
+      let cum = 0;
+      for (const s of SYMBOLS) {
+        cum += s.singleRate;
+        if (rand <= cum) return s;
+      }
+      return SYMBOLS[SYMBOLS.length - 1];
+    }
 
     function showToast(msg) {
       const toast = document.getElementById("toastPopup");
@@ -879,7 +880,7 @@
     // ========================================================
     // 🎰 Initialize 3 Gigantic Vertical Reels
     // ========================================================
-    function populateReel(reelIndex, winnerPrize = null) {
+    function populateReel(reelIndex, targetPrize = null) {
       const strip = document.getElementById(`reelStrip${reelIndex}`);
       strip.innerHTML = "";
       strip.style.transition = "none";
@@ -888,19 +889,10 @@
 
       for (let i = 0; i < NUM_REEL_SYMBOLS; i++) {
         let prize;
-        if (i === TARGET_INDEX && winnerPrize) {
-          prize = winnerPrize;
+        if (i === TARGET_INDEX && targetPrize) {
+          prize = targetPrize;
         } else {
-          const rand = Math.random() * 100;
-          let cumulative = 0;
-          for (const p of PRIZES) {
-            cumulative += p.weight;
-            if (rand <= cumulative) {
-              prize = p;
-              break;
-            }
-          }
-          if (!prize) prize = PRIZES[PRIZES.length - 1];
+          prize = rollClientSingleReel();
         }
 
         const card = document.createElement("div");
@@ -921,9 +913,9 @@
     }
 
     // ========================================================
-    // 🚀 3-REEL SPIN ANIMATION
+    // 🚀 3-REEL INDEPENDENT SPIN ANIMATION
     // ========================================================
-    function startSpinAnimation(winnerItem) {
+    function startSpinAnimation(reelsTargets) {
       if (isSpinning) return;
       isSpinning = true;
       initAudio();
@@ -943,8 +935,9 @@
 
       playReelSpinSound();
 
+      // Populate each reel with its specific target symbol
       for (let i = 0; i < 3; i++) {
-        populateReel(i, winnerItem);
+        populateReel(i, reelsTargets[i]);
       }
 
       const reelDurations = [2200, 3100, 4000];
@@ -961,7 +954,9 @@
         }, 50);
 
         setTimeout(() => {
-          playReelStopSound(i === 2 && (winnerItem.tier === "legendary" || winnerItem.tier === "epic"));
+          let isFinalReel = (i === 2);
+          let allMatch = (reelsTargets[0].id === reelsTargets[1].id && reelsTargets[1].id === reelsTargets[2].id);
+          playReelStopSound(isFinalReel && allMatch);
         }, reelDurations[i] + 50);
       }
 
@@ -969,44 +964,55 @@
         isSpinning = false;
         spinBtn.disabled = false;
 
-        document.getElementById("lastWinText").innerText = winnerItem.name;
-        showWinnerModal(winnerItem);
+        let isMatch = (reelsTargets[0].id === reelsTargets[1].id && reelsTargets[1].id === reelsTargets[2].id);
+        
+        if (isMatch) {
+          let winnerPrize = reelsTargets[0];
+          document.getElementById("lastWinText").innerText = winnerPrize.name;
+          showWinnerModal(reelsTargets, winnerPrize, true);
 
-        if (winnerItem.tier === "legendary" || winnerItem.tier === "epic") {
-          playJackpotSound();
-          triggerCoinShower();
-        } else if (winnerItem.tier === "dud") {
-          playFailSound();
+          if (winnerPrize.tier === "legendary" || winnerPrize.tier === "epic") {
+            playJackpotSound();
+            triggerCoinShower();
+          } else {
+            playReelStopSound(true);
+          }
         } else {
-          playReelStopSound(true);
+          document.getElementById("lastWinText").innerText = "불일치 (꽝)";
+          showWinnerModal(reelsTargets, null, false);
+          playFailSound();
         }
       }, reelDurations[2] + 450);
     }
 
-    function showWinnerModal(prize) {
+    function showWinnerModal(reelsTargets, prize, isMatch) {
       const modal = document.getElementById("winnerModal");
       const modalHeader = document.getElementById("modalHeader");
       const modalMatchReel = document.getElementById("modalMatchReel");
       const modalName = document.getElementById("modalName");
       const modalDesc = document.getElementById("modalDesc");
 
-      if (prize.tier === "legendary") {
-        modalHeader.innerText = "🌟 [전설 0.05%] 3-릴 잭팟 당첨!!";
-        modalHeader.style.color = "#ffaa00";
-      } else if (prize.tier === "epic") {
-        modalHeader.innerText = "🌈 3-릴 에픽 보상 당첨!";
-        modalHeader.style.color = "#d946ef";
-      } else if (prize.tier === "dud") {
-        modalHeader.innerText = "💀 3-릴 꽝...";
-        modalHeader.style.color = "#94a3b8";
-      } else {
-        modalHeader.innerText = "🎉 3-릴 적중! 당첨을 축하합니다!";
-        modalHeader.style.color = "#ffd700";
-      }
+      modalMatchReel.innerHTML = `<span>${reelsTargets[0].icon}</span><span>${reelsTargets[1].icon}</span><span>${reelsTargets[2].icon}</span>`;
 
-      modalMatchReel.innerHTML = `<span>${prize.icon}</span><span>${prize.icon}</span><span>${prize.icon}</span>`;
-      modalName.innerText = prize.name;
-      modalDesc.innerText = prize.desc;
+      if (isMatch && prize) {
+        if (prize.tier === "legendary") {
+          modalHeader.innerText = "🌟 [전설 0.05%] 3-릴 잭팟 당첨!!";
+          modalHeader.style.color = "#ffaa00";
+        } else if (prize.tier === "epic") {
+          modalHeader.innerText = "🌈 3-릴 에픽 보상 당첨!";
+          modalHeader.style.color = "#d946ef";
+        } else {
+          modalHeader.innerText = "🎉 3-릴 적중! 당첨을 축하합니다!";
+          modalHeader.style.color = "#ffd700";
+        }
+        modalName.innerText = prize.name;
+        modalDesc.innerText = prize.desc;
+      } else {
+        modalHeader.innerText = "😢 3-릴 일치 실패! (꽝)";
+        modalHeader.style.color = "#94a3b8";
+        modalName.innerText = "아쉽게도 3개 릴이 일치하지 않았습니다.";
+        modalDesc.innerText = "3개 칸에 동일한 심볼이 나란히 정렬되면 보상이 지급됩니다!";
+      }
 
       modal.classList.add("active");
     }
@@ -1062,10 +1068,10 @@
       requestAnimationFrame(renderCoins);
     }
 
-    window.onServerSpinResult = function(winnerId, newBalance) {
-      const winnerPrize = PRIZES.find(p => p.id === winnerId) || PRIZES[PRIZES.length - 1];
+    window.onServerSpinResult = function(reelsIds, isMatch, winnerId, newBalance) {
       if (newBalance !== undefined) currentBalance = newBalance;
-      startSpinAnimation(winnerPrize);
+      const targets = reelsIds.map(id => SYMBOLS.find(s => s.id === id) || SYMBOLS[0]);
+      startSpinAnimation(targets);
     };
 
     window.setPlayerBalance = function(balance) {
@@ -1091,7 +1097,7 @@
           onSuccess: function(response) {
             try {
               const data = JSON.parse(response);
-              window.onServerSpinResult(data.winnerId, data.newBalance);
+              window.onServerSpinResult(data.reels, data.isMatch, data.winnerId, data.newBalance);
             } catch (e) {
               console.error("MCEF parse error:", e);
             }
@@ -1101,19 +1107,13 @@
           }
         });
       } else {
+        // Standalone browser fallback simulation (Exact independent 3-reel rolls)
         setTimeout(() => {
           if (!isSpinning) {
-            const rand = Math.random() * 100;
-            let cumulative = 0;
-            let chosenPrize = PRIZES[PRIZES.length - 1];
-            for (const p of PRIZES) {
-              cumulative += p.weight;
-              if (rand <= cumulative) {
-                chosenPrize = p;
-                break;
-              }
-            }
-            startSpinAnimation(chosenPrize);
+            let r1 = rollClientSingleReel();
+            let r2 = rollClientSingleReel();
+            let r3 = rollClientSingleReel();
+            startSpinAnimation([r1, r2, r3]);
           }
         }, 100);
       }
