@@ -752,25 +752,25 @@
           <div class="odds-sub">낙하 무효 + 이속 10%</div>
         </div>
         <div class="odds-card tier-epic">
-          <div class="odds-rate">0.27% 일치 (릴 14.0%) 🌈</div>
-          <div class="odds-icon">💎✨</div>
-          <div class="odds-name">무지개 파편</div>
-          <div class="odds-sub">전설 가공 보석</div>
+          <div class="odds-rate">0.41% 일치 (릴 16.0%) 🏺</div>
+          <div class="odds-icon">🏺✨</div>
+          <div class="odds-name">유물 경험치 병</div>
+          <div class="odds-sub">고대 유물 경험치 획득</div>
         </div>
         <div class="odds-card tier-rare">
-          <div class="odds-rate">0.58% 일치 (릴 18.0%) ⛏️</div>
-          <div class="odds-icon">💎⛏️</div>
-          <div class="odds-name">고급 광물 세트</div>
-          <div class="odds-sub">다이아 8 + 지오드 10</div>
+          <div class="odds-rate">0.80% 일치 (릴 20.0%) 🎒</div>
+          <div class="odds-icon">🎒🎩</div>
+          <div class="odds-name">모자 뽑기 가방</div>
+          <div class="odds-sub">랜덤 모자 가방 1종</div>
         </div>
         <div class="odds-card tier-uncommon">
-          <div class="odds-rate">1.38% 일치 (릴 24.0%) 🍱</div>
-          <div class="odds-icon">🍱🍗</div>
+          <div class="odds-rate">1.76% 일치 (릴 26.0%) 🍱</div>
+          <div class="odds-icon">🍱🍖</div>
           <div class="odds-name">궁극의 미식가 세트</div>
-          <div class="odds-sub">특급 요리 모음</div>
+          <div class="odds-sub">선릿 요리 3종 랜덤</div>
         </div>
         <div class="odds-card tier-payback">
-          <div class="odds-rate">3.93% 일치 (릴 34.0%) 🪙</div>
+          <div class="odds-rate">2.20% 일치 (릴 28.0%) 🪙</div>
           <div class="odds-icon">🪙💰</div>
           <div class="odds-name">선릿 코인 환급</div>
           <div class="odds-sub">50,000원 계좌 입금</div>
@@ -785,10 +785,10 @@
     // ========================================================
     const SYMBOLS = [
       { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", singleRate: 10.0 },
-      { id: "prismatic_shard", name: "무지개 파편", desc: "최고급 전설 가공 보석", icon: "💎✨", tier: "epic", badge: "EPIC", singleRate: 14.0 },
-      { id: "diamond_set", name: "고급 광물 세트", desc: "다이아몬드 8개 + 오므니 지오드 10개", icon: "⛏️💎", tier: "rare", badge: "RARE", singleRate: 18.0 },
-      { id: "feast_set", name: "궁극의 미식가 세트", desc: "특급 요리 및 고급 음식 모음", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 24.0 },
-      { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 34.0 }
+      { id: "relic_bottle", name: "유물 경험치 병", desc: "고대 유물 경험치 즉시 충전", icon: "🏺✨", tier: "epic", badge: "EPIC", singleRate: 16.0 },
+      { id: "hat_bag", name: "모자 뽑기 가방", desc: "랜덤 모자 가방 1종 획득", icon: "🎒🎩", tier: "rare", badge: "RARE", singleRate: 20.0 },
+      { id: "feast_set", name: "궁극의 미식가 세트", desc: "선릿밸리 특급 요리 3종 지급", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 26.0 },
+      { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 28.0 }
     ];
 
     const SYMBOL_HEIGHT = 230;
@@ -806,7 +806,6 @@
     let audioUnlocked = false;
 
     // BULLETPROOF AUDIO RESILIENCE & CLONING ENGINE
-    const audioPool = {};
     const SFX_URLS = {
       sfxSpin: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
       sfxStop: "https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3",
@@ -819,13 +818,11 @@
       if (audioUnlocked) return;
       audioUnlocked = true;
 
-      // Resume WebAudio / BGM on any user gesture
       if (bgmAudio && bgmEnabled) {
         bgmAudio.volume = 0.55;
         const playPromise = bgmAudio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            // Will retry on next interaction
             audioUnlocked = false;
           });
         }
@@ -842,7 +839,6 @@
           let p = sound.play();
           if (p !== undefined) {
             p.catch(() => {
-              // Fallback to newly spawned Audio object if DOM audio is stuck
               if (SFX_URLS[id]) {
                 let freshAudio = new Audio(SFX_URLS[id]);
                 freshAudio.volume = vol;
@@ -1008,7 +1004,7 @@
 
         // AUTO-SPIN NEXT CYCLE
         if (autoSpinActive) {
-          let nextDelay = Math.round(700 / currentSpeed);
+          let nextDelay = Math.round(750 / currentSpeed);
           if (isMatch) nextDelay = 1500;
           
           autoSpinTimeout = setTimeout(() => {
@@ -1035,7 +1031,7 @@
         if (prize.tier === "legendary") {
           title.innerText = "🌟 [0.1% 전설 잭팟 당첨!!] 🌟";
         } else if (prize.tier === "epic") {
-          title.innerText = "🌈 에픽 보상 당첨! 🌈";
+          title.innerText = "🏺 에픽 보상 당첨! 🏺";
         } else {
           title.innerText = "🎉 3-릴 일치 당첨! 🎉";
         }
