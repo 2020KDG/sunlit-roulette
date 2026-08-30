@@ -674,27 +674,76 @@
   <div class="toast-popup" id="toastPopup">⚠️ 은행 잔고가 부족합니다! (최소 100,000원 필요)</div>
 
   <!-- Authentic Casino Sound Elements -->
-  <audio id="bgmAudio" loop preload="auto" autoplay>
-    <source src="https://assets.mixkit.co/music/1183/1183.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxSpin" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxStop" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxReach" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxDing" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxJackpot" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3" type="audio/mp3">
-  </audio>
-  <audio id="sfxFail" preload="auto">
-    <source src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3" type="audio/mp3">
-  </audio>
+  <audio id="bgmAudio" loop preload="auto" src="https://assets.mixkit.co/music/1183/1183.mp3"></audio>
+  <audio id="sfxSpin" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+  <audio id="sfxStop" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3"></audio>
+  <audio id="sfxReach" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2874/2874-preview.mp3"></audio>
+  <audio id="sfxDing" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2021/2021-preview.mp3"></audio>
+  <audio id="sfxJackpot" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3"></audio>
+  <audio id="sfxFail" preload="auto" src="https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"></audio>
+
+  <script>
+    // ========================================================
+    // 🎵 BULLETPROOF IMMEDIATE BGM INITIALIZER & LIFECYCLE
+    // ========================================================
+    let bgmAudio = document.getElementById("bgmAudio");
+    let bgmEnabled = true;
+    let audioUnlocked = false;
+
+    function forcePlayBGM() {
+      if (!bgmEnabled) return;
+      if (!bgmAudio) bgmAudio = document.getElementById("bgmAudio");
+      if (bgmAudio) {
+        bgmAudio.volume = 0.49;
+        let p = bgmAudio.play();
+        if (p !== undefined) {
+          p.then(() => {
+            audioUnlocked = true;
+          }).catch(() => {});
+        }
+      }
+    }
+    window.forcePlayBGM = forcePlayBGM;
+
+    if (bgmAudio) {
+      bgmAudio.volume = 0.49;
+      if (bgmAudio.readyState >= 2) {
+        forcePlayBGM();
+      } else {
+        bgmAudio.onloadeddata = forcePlayBGM;
+        bgmAudio.oncanplay = forcePlayBGM;
+        bgmAudio.oncanplaythrough = forcePlayBGM;
+      }
+    }
+
+    // Proactive Heartbeat: Attempt play every 120ms until audio stream is confirmed playing
+    let bgmCheckInterval = setInterval(() => {
+      if (!bgmEnabled || audioUnlocked) {
+        if (bgmAudio && !bgmAudio.paused) {
+          audioUnlocked = true;
+          clearInterval(bgmCheckInterval);
+        }
+        return;
+      }
+      forcePlayBGM();
+    }, 120);
+
+    // CLEAN AUDIO CLEANUP ON SCREEN CLOSE
+    function cleanupAudioOnClose() {
+      if (bgmCheckInterval) clearInterval(bgmCheckInterval);
+      if (bgmAudio) {
+        try {
+          bgmAudio.pause();
+          bgmAudio.currentTime = 0;
+          bgmAudio.src = "";
+          bgmAudio.load();
+        } catch (e) {}
+      }
+    }
+    window.addEventListener("beforeunload", cleanupAudioOnClose);
+    window.addEventListener("pagehide", cleanupAudioOnClose);
+    window.addEventListener("unload", cleanupAudioOnClose);
+  </script>
 
   <div class="casino-bg">
     <div class="spotlight spotlight-left"></div>
@@ -863,10 +912,6 @@
     let autoSpinHeartbeat = null;
     let currentSpeed = 1; // 1, 2, or 4
 
-    let bgmAudio = null;
-    let bgmEnabled = true;
-    let audioUnlocked = false;
-
     // BULLETPROOF AUDIO RESILIENCE & CLONING ENGINE
     const SFX_URLS = {
       sfxSpin: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
@@ -876,22 +921,6 @@
       sfxJackpot: "https://assets.mixkit.co/active_storage/sfx/2017/2017-preview.mp3",
       sfxFail: "https://assets.mixkit.co/active_storage/sfx/253/253-preview.mp3"
     };
-
-    // INSTANT FORCE PLAY BGM ENGINE
-    function forcePlayBGM() {
-      if (!bgmEnabled) return;
-      if (!bgmAudio) bgmAudio = document.getElementById("bgmAudio");
-      if (bgmAudio) {
-        bgmAudio.volume = 0.49;
-        let p = bgmAudio.play();
-        if (p !== undefined) {
-          p.then(() => {
-            audioUnlocked = true;
-          }).catch(() => {});
-        }
-      }
-    }
-    window.forcePlayBGM = forcePlayBGM;
 
     function playAudio(id, vol = 0.49) {
       try {
@@ -1297,24 +1326,15 @@
     }
     window.stopAutoSpin = stopAutoSpin;
 
-    // SCREEN CLOSE SAFETY
-    window.addEventListener("beforeunload", () => stopAutoSpin());
-
     // UNIVERSAL USER GESTURE AUDIO UNLOCKERS (INSTANT PLAY ON ANY HOVER/MOVE/CLICK)
     ["DOMContentLoaded", "load", "mousemove", "pointermove", "mouseenter", "pointerdown", "mousedown", "keydown", "focus"].forEach(evt => {
-      window.addEventListener(evt, () => forcePlayBGM(), { passive: true });
-      document.addEventListener(evt, () => forcePlayBGM(), { passive: true });
+      window.addEventListener(evt, () => forcePlayBGM(), { passive: true, once: false });
+      document.addEventListener(evt, () => forcePlayBGM(), { passive: true, once: false });
     });
 
     window.addEventListener("DOMContentLoaded", () => {
-      bgmAudio = document.getElementById("bgmAudio");
       setupLEDBulbs();
       initAllReels();
-
-      if (bgmAudio) {
-        bgmAudio.addEventListener("canplaythrough", () => forcePlayBGM());
-        bgmAudio.addEventListener("loadeddata", () => forcePlayBGM());
-      }
 
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("balance")) {
