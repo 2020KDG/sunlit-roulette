@@ -1029,9 +1029,8 @@
       ];
 
       if (isRabbitReach) {
-        // 🔥 토끼 슬리퍼 잭팟 리치: 3번째 릴을 롱 슬로우 모션으로 회전!
         baseDurations = [1600, 2200, 4800];
-        reelEasings[2] = "cubic-bezier(0.08, 0.82, 0.17, 1)"; // 긴장감 넘치는 슬로우 모션 감속
+        reelEasings[2] = "cubic-bezier(0.08, 0.82, 0.17, 1)";
       } else {
         baseDurations = [1600, 2200, 2800];
       }
@@ -1044,7 +1043,7 @@
         const strip = document.getElementById(`reelStrip${i}`);
         strip.style.transition = "none";
         strip.style.transform = "translateY(0px)";
-        void strip.offsetHeight; // Critical layout flush!
+        void strip.offsetHeight;
       }
 
       // 4. Trigger Smooth Spinning on Next Browser Repaint Frame
@@ -1067,7 +1066,6 @@
       setTimeout(() => {
         playAudio("sfxStop", 0.56);
 
-        // 🔥 만약 토끼 슬리퍼 리치라면 3번째 릴에 극적 텐션 이펙트 점등!
         if (isRabbitReach) {
           if (reelWin2) reelWin2.classList.add("reach-active");
           if (reachBadge) reachBadge.classList.add("active");
@@ -1110,11 +1108,12 @@
           playAudio("sfxFail", 0.42);
         }
 
-        // AUTO-SPIN NEXT CYCLE
+        // AUTO-SPIN NEXT CYCLE (ROCK-SOLID RELIABILITY)
         if (autoSpinActive) {
           let nextDelay = Math.round(750 / currentSpeed);
-          if (isMatch || isRabbitReach) nextDelay = 1600;
+          if (isMatch || isRabbitReach) nextDelay = 1500;
           
+          if (autoSpinTimeout) clearTimeout(autoSpinTimeout);
           autoSpinTimeout = setTimeout(() => {
             if (autoSpinActive && !isSpinning) {
               if (currentBalance >= 100000) {
@@ -1259,17 +1258,20 @@
 
     function stopAutoSpin(reason = null) {
       autoSpinActive = false;
-      if (autoSpinTimeout) clearTimeout(autoSpinTimeout);
+      if (autoSpinTimeout) {
+        clearTimeout(autoSpinTimeout);
+        autoSpinTimeout = null;
+      }
       const autoBtn = document.getElementById("autoSpinBtn");
       const autoBtnText = document.getElementById("autoBtnText");
       if (autoBtn) autoBtn.classList.remove("running");
       if (autoBtnText) autoBtnText.innerText = "자동 스핀 (OFF)";
       if (reason) showToast(reason);
     }
+    window.stopAutoSpin = stopAutoSpin;
 
-    // ESC AND SCREEN CLOSE SAFETY
+    // SCREEN CLOSE SAFETY (ONLY ON UNLOAD, REMOVED UNWANTED BLUR LISTENER)
     window.addEventListener("beforeunload", () => stopAutoSpin());
-    window.addEventListener("blur", () => stopAutoSpin());
 
     // UNIVERSAL USER GESTURE AUDIO UNLOCKERS
     ["click", "pointerdown", "mousedown", "keydown", "mousemove"].forEach(evt => {
