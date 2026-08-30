@@ -561,11 +561,12 @@
     }
 
     .odds-header {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: #ffd700;
       margin-bottom: 4px;
       letter-spacing: 1px;
+      text-align: center;
     }
 
     .odds-grid {
@@ -578,17 +579,23 @@
       background: rgba(16, 10, 28, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
-      padding: 5px 4px;
+      padding: 6px 4px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
 
-    .odds-rate { font-size: 11px; font-weight: 900; margin-bottom: 2px; }
-    .odds-icon { font-size: 22px; margin-bottom: 1px; }
-    .odds-name { font-size: 12px; font-weight: 800; white-space: nowrap; margin-bottom: 1px; }
-    .odds-sub { font-size: 9px; color: #a78bfa; }
+    .odds-rate { 
+      font-size: 13px; 
+      font-weight: 900; 
+      margin-bottom: 2px;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+    .odds-icon { font-size: 24px; margin-bottom: 2px; }
+    .odds-name { font-size: 13px; font-weight: 800; white-space: nowrap; margin-bottom: 2px; }
+    .odds-sub { font-size: 10px; color: #a78bfa; }
 
     /* TOAST NOTIFICATION */
     .toast-popup {
@@ -743,34 +750,34 @@
 
     <!-- Bottom Odds Showcase -->
     <section class="odds-showcase">
-      <div class="odds-header">🏆 3-릴 개별 독립 확률 및 당첨 보상 (불일치 시 자동 꽝)</div>
+      <div class="odds-header">🏆 각 칸 심볼 등장 확률 (동일 심볼 3칸 일치 시 당첨)</div>
       <div class="odds-grid">
         <div class="odds-card tier-legendary">
-          <div class="odds-rate">0.10% 일치 (릴 10.0%) 🌟</div>
+          <div class="odds-rate">8.9% 🌟</div>
           <div class="odds-icon">🐰✨</div>
           <div class="odds-name">[전설] 토끼 슬리퍼</div>
           <div class="odds-sub">낙하 무효 + 이속 10%</div>
         </div>
         <div class="odds-card tier-epic">
-          <div class="odds-rate">0.41% 일치 (릴 16.0%) 🏺</div>
+          <div class="odds-rate">18.0% 🏺</div>
           <div class="odds-icon">🏺✨</div>
           <div class="odds-name">유물 경험치 병 30개</div>
           <div class="odds-sub">유물 경험치 30병 지급</div>
         </div>
         <div class="odds-card tier-rare">
-          <div class="odds-rate">0.80% 일치 (릴 20.0%) 🎒</div>
+          <div class="odds-rate">22.0% 🎒</div>
           <div class="odds-icon">🎒🎩</div>
           <div class="odds-name">모자 뽑기 가방</div>
           <div class="odds-sub">랜덤 모자 가방 1종</div>
         </div>
         <div class="odds-card tier-uncommon">
-          <div class="odds-rate">1.76% 일치 (릴 26.0%) 🍱</div>
+          <div class="odds-rate">25.1% 🍱</div>
           <div class="odds-icon">🍱🍖</div>
           <div class="odds-name">궁극의 미식가 세트</div>
           <div class="odds-sub">선릿 요리 3종 랜덤</div>
         </div>
         <div class="odds-card tier-payback">
-          <div class="odds-rate">2.20% 일치 (릴 28.0%) 🪙</div>
+          <div class="odds-rate">26.0% 🪙</div>
           <div class="odds-icon">🪙💰</div>
           <div class="odds-name">선릿 코인 환급</div>
           <div class="odds-sub">50,000원 계좌 입금</div>
@@ -784,11 +791,11 @@
     // 🎰 3-REEL INDEPENDENT PROBABILITY SLOT MACHINE ENGINE
     // ========================================================
     const SYMBOLS = [
-      { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", singleRate: 10.0 },
-      { id: "relic_bottle", name: "유물 경험치 병 30개", desc: "고대 유물 경험치 30병 즉시 획득", icon: "🏺✨", tier: "epic", badge: "EPIC", singleRate: 16.0 },
-      { id: "hat_bag", name: "모자 뽑기 가방", desc: "랜덤 모자 가방 1종 획득", icon: "🎒🎩", tier: "rare", badge: "RARE", singleRate: 20.0 },
-      { id: "feast_set", name: "궁극의 미식가 세트", desc: "선릿밸리 특급 요리 3종 지급", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 26.0 },
-      { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 28.0 }
+      { id: "bunny_slippers", name: "[전설] 토끼 슬리퍼", desc: "낙하 데미지 100% 무효화 + 이속 10%", icon: "🐰✨", tier: "legendary", badge: "LEGENDARY", singleRate: 8.88 },
+      { id: "relic_bottle", name: "유물 경험치 병 30개", desc: "고대 유물 경험치 30병 즉시 획득", icon: "🏺✨", tier: "epic", badge: "EPIC", singleRate: 18.00 },
+      { id: "hat_bag", name: "모자 뽑기 가방", desc: "랜덤 모자 가방 1종 획득", icon: "🎒🎩", tier: "rare", badge: "RARE", singleRate: 22.00 },
+      { id: "feast_set", name: "궁극의 미식가 세트", desc: "선릿밸리 특급 요리 3종 지급", icon: "🍱🍖", tier: "uncommon", badge: "DELUXE", singleRate: 25.12 },
+      { id: "sun_payback", name: "선릿 코인 환급", desc: "50,000원 계좌 즉시 입금", icon: "🪙💰", tier: "payback", badge: "CASHBACK", singleRate: 26.00 }
     ];
 
     const SYMBOL_HEIGHT = 230;
@@ -1029,7 +1036,7 @@
       if (isMatch && prize) {
         banner.className = "inline-result-banner win active";
         if (prize.tier === "legendary") {
-          title.innerText = "🌟 [0.1% 전설 잭팟 당첨!!] 🌟";
+          title.innerText = "🌟 [전설 잭팟 당첨!!] 🌟";
         } else if (prize.tier === "epic") {
           title.innerText = "🏺 에픽 보상 당첨! 🏺";
         } else {
