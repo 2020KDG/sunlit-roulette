@@ -270,6 +270,19 @@ function updateBalanceDisplay() {
   document.getElementById("playerBalance").innerText = currentBalance.toLocaleString();
 }
 
+// Global hook for Minecraft Client to deliver server RNG result
+window.onServerSpinResult = function(winnerId, newBalance) {
+  const winnerPrize = PRIZES.find(p => p.id === winnerId) || PRIZES[PRIZES.length - 1];
+  if (newBalance !== undefined) currentBalance = newBalance;
+  startSpinAnimation(winnerPrize);
+};
+
+// Global hook for MCEF Java client to sync balance
+window.setPlayerBalance = function(balance) {
+  currentBalance = balance;
+  updateBalanceDisplay();
+};
+
 // MCEF Query or Standalone Trigger
 function triggerSpin() {
   if (isSpinning) return;
@@ -278,16 +291,17 @@ function triggerSpin() {
     return;
   }
 
-  // Check if running inside MCEF in Minecraft
+  // Signal MCEF via hash change (100% native intercept)
+  window.location.hash = "spin_" + Date.now();
+
+  // Also query if mcefQuery is available
   if (window.mcefQuery) {
     window.mcefQuery({
       request: "spin",
       onSuccess: function(response) {
         try {
           const data = JSON.parse(response);
-          const winnerPrize = PRIZES.find(p => p.id === data.winnerId) || PRIZES[0];
-          if (data.newBalance !== undefined) currentBalance = data.newBalance;
-          startSpinAnimation(winnerPrize);
+          window.onServerSpinResult(data.winnerId, data.newBalance);
         } catch (e) {
           console.error("MCEF response parse error:", e);
         }
@@ -297,29 +311,32 @@ function triggerSpin() {
       }
     });
   } else {
-    // Standalone Web Test Mode: Roll RNG locally
-    const rand = Math.random() * 100;
-    let cumulative = 0;
-    let chosenPrize = PRIZES[PRIZES.length - 1];
-
-    for (const p of PRIZES) {
-      cumulative += p.weight;
-      if (rand <= cumulative) {
-        chosenPrize = p;
-        break;
+    // Standalone Web Test Mode fallback
+    setTimeout(() => {
+      if (!isSpinning) {
+        const rand = Math.random() * 100;
+        let cumulative = 0;
+        let chosenPrize = PRIZES[PRIZES.length - 1];
+        for (const p of PRIZES) {
+          cumulative += p.weight;
+          if (rand <= cumulative) {
+            chosenPrize = p;
+            break;
+          }
+        }
+        startSpinAnimation(chosenPrize);
       }
-    }
-    startSpinAnimation(chosenPrize);
+    }, 100);
   }
 }
 
-// Global hook for MCEF Java client to sync balance
-window.setPlayerBalance = function(balance) {
-  currentBalance = balance;
-  updateBalanceDisplay();
-};
-
 window.addEventListener("DOMContentLoaded", () => {
+  // Read balance from URL params if provided
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has("balance")) {
+    currentBalance = parseInt(urlParams.get("balance"), 10) || 0;
+  }
+
   populateTrack();
   updateBalanceDisplay();
 
