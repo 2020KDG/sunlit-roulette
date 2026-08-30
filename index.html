@@ -855,9 +855,13 @@
 
     let currentBalance = 0;
     let isSpinning = false;
+    let isWaitingServerResponse = false;
+    let lastSpinRequestTime = 0;
+    let lastSpinFinishTime = 0;
+    
     let autoSpinActive = false;
+    let autoSpinHeartbeat = null;
     let currentSpeed = 1; // 1, 2, or 4
-    let autoSpinTimeout = null;
 
     let bgmAudio = null;
     let bgmEnabled = true;
@@ -951,7 +955,7 @@
     }
 
     // ========================================================
-    // 🎰 Initialize 3 Gigantic Vertical Reels (Without Pre-offset Bug)
+    // 🎰 Initialize 3 Gigantic Vertical Reels
     // ========================================================
     function populateReel(reelIndex, targetPrize = null) {
       const strip = document.getElementById(`reelStrip${reelIndex}`);
@@ -987,10 +991,11 @@
     }
 
     // ========================================================
-    // 🚀 3-REEL SPIN ANIMATION (FLAWLESS REFLOW + RABBIT REACH SLOW-MO)
+    // 🚀 3-REEL SPIN ANIMATION
     // ========================================================
     function startSpinAnimation(reelsTargets) {
       isSpinning = true;
+      isWaitingServerResponse = false;
       unlockAudioEngine();
 
       const spinBtn = document.getElementById("spinBtn");
@@ -1012,15 +1017,12 @@
       updateBalanceDisplay();
       playAudio("sfxSpin", 0.45);
 
-      // Check if 토끼 슬리퍼 리치(Reach) 조건 발동 ([🐰, 🐰, ?])
       const isRabbitReach = (reelsTargets[0].id === "bunny_slippers" && reelsTargets[1].id === "bunny_slippers");
 
-      // 1. Populate the reels with 40 new symbols
       for (let i = 0; i < 3; i++) {
         populateReel(i, reelsTargets[i]);
       }
 
-      // 2. Compute dynamic durations
       let baseDurations;
       let reelEasings = [
         "cubic-bezier(0.12, 0.85, 0.15, 1)",
@@ -1038,15 +1040,13 @@
       const reelDurations = baseDurations.map(d => Math.round(d / currentSpeed));
       const targetY = -(TARGET_INDEX * SYMBOL_HEIGHT - 115);
 
-      // 3. FLUSH STYLES / FORCE REFLOW (100% Prevents Skipped Animation Glitch)
       for (let i = 0; i < 3; i++) {
         const strip = document.getElementById(`reelStrip${i}`);
         strip.style.transition = "none";
         strip.style.transform = "translateY(0px)";
-        void strip.offsetHeight;
+        void strip.offsetHeight; // Critical layout flush
       }
 
-      // 4. Trigger Smooth Spinning on Next Browser Repaint Frame
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           for (let i = 0; i < 3; i++) {
@@ -1084,6 +1084,8 @@
 
       setTimeout(() => {
         isSpinning = false;
+        isWaitingServerResponse = false;
+        lastSpinFinishTime = Date.now();
         spinBtn.disabled = false;
 
         let isMatch = (reelsTargets[0].id === reelsTargets[1].id && reelsTargets[1].id === reelsTargets[2].id);
@@ -1107,27 +1109,10 @@
           showInlineResult(null, false);
           playAudio("sfxFail", 0.42);
         }
-
-        // AUTO-SPIN NEXT CYCLE (ROCK-SOLID RELIABILITY)
-        if (autoSpinActive) {
-          let nextDelay = Math.round(750 / currentSpeed);
-          if (isMatch || isRabbitReach) nextDelay = 1500;
-          
-          if (autoSpinTimeout) clearTimeout(autoSpinTimeout);
-          autoSpinTimeout = setTimeout(() => {
-            if (autoSpinActive && !isSpinning) {
-              if (currentBalance >= 100000) {
-                triggerSpin();
-              } else {
-                stopAutoSpin("⚠️ 잔고 부족으로 자동 스핀이 중단되었습니다!");
-              }
-            }
-          }, nextDelay);
-        }
       }, finishDelay);
     }
 
-    // INLINE FLOATING RESULT BANNER (NON-BLOCKING)
+    // INLINE FLOATING RESULT BANNER
     function showInlineResult(prize, isMatch) {
       const banner = document.getElementById("inlineBanner");
       const title = document.getElementById("bannerTitle");
@@ -1231,10 +1216,55 @@
         return;
       }
 
-      window.location.hash = "spin_" + Date.now();
+      isWaitingServerResponse = true;
+      lastSpinRequestTime = Date.now();
+      window.location.hash = "spin_" + lastSpinRequestTime;
     }
 
-    // AUTO-SPIN TOGGLE
+    // ========================================================
+    // 🔄 UNBREAKABLE AUTO-SPIN HEARTBEAT ENGINE
+    // ========================================================
+    function startAutoSpinLoop() {
+      if (autoSpinHeartbeat) clearInterval(autoSpinHeartbeat);
+
+      autoSpinHeartbeat = setInterval(() => {
+        if (!autoSpinActive) {
+          clearInterval(autoSpinHeartbeat);
+          autoSpinHeartbeat = null;
+          return;
+        }
+
+        // 1. If reels are actively spinning, wait
+        if (isSpinning) return;
+
+        // 2. Check balance
+        if (currentBalance < 100000) {
+          stopAutoSpin("⚠️ 잔고 부족으로 자동 스핀이 중단되었습니다!");
+          return;
+        }
+
+        let now = Date.now();
+
+        // 3. Watchdog: If waiting for server response > 2500ms (packet dropped or lag), re-trigger!
+        if (isWaitingServerResponse) {
+          if (now - lastSpinRequestTime > 2500) {
+            console.warn("[AUTO-SPIN WATCHDOG] Server response timeout. Re-dispatching spin request...");
+            triggerSpin();
+          }
+          return;
+        }
+
+        // 4. Inter-spin pause duration based on speed
+        let pauseDuration = Math.round(550 / currentSpeed);
+        if (now - lastSpinFinishTime < pauseDuration) {
+          return;
+        }
+
+        // 5. Fire Next Spin!
+        triggerSpin();
+      }, 80);
+    }
+
     function toggleAutoSpin() {
       if (autoSpinActive) {
         stopAutoSpin();
@@ -1248,9 +1278,10 @@
         const autoBtnText = document.getElementById("autoBtnText");
         autoBtn.classList.add("running");
         autoBtnText.innerText = "자동 스핀 (STOP)";
-        showToast("🔄 자동 스핀을 시작합니다! (멈추려면 다시 클릭)");
-        
-        if (!isSpinning) {
+        showToast("🔄 자동 스핀 시작! (멈추려면 다시 클릭)");
+
+        startAutoSpinLoop();
+        if (!isSpinning && !isWaitingServerResponse) {
           triggerSpin();
         }
       }
@@ -1258,9 +1289,9 @@
 
     function stopAutoSpin(reason = null) {
       autoSpinActive = false;
-      if (autoSpinTimeout) {
-        clearTimeout(autoSpinTimeout);
-        autoSpinTimeout = null;
+      if (autoSpinHeartbeat) {
+        clearInterval(autoSpinHeartbeat);
+        autoSpinHeartbeat = null;
       }
       const autoBtn = document.getElementById("autoSpinBtn");
       const autoBtnText = document.getElementById("autoBtnText");
@@ -1270,7 +1301,7 @@
     }
     window.stopAutoSpin = stopAutoSpin;
 
-    // SCREEN CLOSE SAFETY (ONLY ON UNLOAD, REMOVED UNWANTED BLUR LISTENER)
+    // SCREEN CLOSE SAFETY
     window.addEventListener("beforeunload", () => stopAutoSpin());
 
     // UNIVERSAL USER GESTURE AUDIO UNLOCKERS
